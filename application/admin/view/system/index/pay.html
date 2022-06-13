@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">支付配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="alert alert-warning">
+                        授权需要在公众号提取以下信息；给公众号授权域名添加当前请求的域名；在微信支付时需要用openid。要配置微信提取信息请到这里：<a href="<{:url('wechat')}>">公众号配置</a>
+                    </div>
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+
+                            <form method="post" action="<{:url('/admin/system.index/pay_action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="app_id">appid</label>
+                                        <input name="app_id" autocomplete="off" value="<{$data?$data.app_id:''}>" type="text" class="form-control" id="app_id" placeholder="公众号appid">
+                                        <span class="bs-red">公众号appid</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="mch_id">mch_id</label>
+                                        <input name="mch_id" autocomplete="off" value="<{$data?$data.mch_id:''}>" type="text" class="form-control" id="mch_id" placeholder="微信支付商户id">
+                                        <span class="bs-red">微信支付商户id</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="mch_key">商户支付秘钥</label>
+                                        <input name="mch_key" autocomplete="off" value="<{$data?$data.mch_key:''}>" type="password" class="form-control" id="mch_key" placeholder="微信商户支付秘钥">
+                                        <span class="bs-red">微信商户支付秘钥</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cert_pem">商户支付证书cert_pem</label>
+                                        <textarea name="cert_pem" autocomplete="off"  class="form-control" id="cert_pem" placeholder="微信商户支付秘钥"><{$data?$data.cert_pem:''}></textarea>
+                                        <span class="bs-red">商户支付证书cert_pem</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="key_pem">商户支付私钥key_pem</label>
+                                        <textarea name="key_pem" autocomplete="off"  class="form-control" id="key_pem" placeholder="微信商户支付私钥"><{$data?$data.key_pem:''}></textarea>
+                                        <span class="bs-red">商户支付私钥key_pem</span>
+                                    </div>
+
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit()
+                                    })" class="btn btn-primary">提交保存</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+
+
+</body>
+</html>

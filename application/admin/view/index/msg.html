@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>站内消息</title>
+    <{include file="public/header"}>
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <section class="content">
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <div class="card card-primary card-outline">
+
+                                <div class="card-header">
+                                    <form action="<{:url()}>">
+                                        <div class="form-row ">
+
+                                            <div class="col-auto">
+                                                <select name="is_favorite" class="form-control " >
+                                                    <option  value="">全部</option>
+                                                    <option <{if null !== $Request.param.is_favorite &&$Request.param.is_favorite=='1'}>selected<{/if}>  value="1">已收藏</option>
+
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <select name="is_read" class="form-control" >
+                                                    <option value="">阅读状态</option>
+                                                    <option <{if null !== $Request.param.is_read &&$Request.param.is_read=='1'}>selected<{/if}>  value="1">已读</option>
+                                                    <option <{if null !== $Request.param.is_read &&$Request.param.is_read=='-1'}>selected<{/if}>  value="-1">未读</option>
+
+                                                </select>
+                                            </div>
+
+                                            <div class="col-auto">
+
+                                                <input name="keyword" type="text" class="form-control " placeholder="关键词搜索" value="">
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <button  type="submit" class="btn btn-primary mb-2 "><i class="fas fa-search"></i></button>
+
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="mailbox-controls">
+                                        <!-- Check all button -->
+                                        <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="far fa-square"></i>
+                                        </button>
+                                        <div class="btn-group">
+                                            <button onclick="action('del_all')" type="button" class="btn btn-default btn-sm">
+                                                <i class="far fa-trash-alt"></i>
+                                            </button>
+
+                                        </div>
+                                        <button type="button" title="设为已读"   onclick="action('read_all')"  class="btn btn-default btn-sm">
+                                            <i class="fa fa-eye bs-green"></i>
+                                        </button>
+                                        <!-- /.btn-group -->
+                                        <button type="button" onclick="location.reload()" class="btn btn-default btn-sm">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+
+                                    </div>
+                                    <div class="table-responsive mailbox-messages">
+                                        <table class="table table-hover table-striped ">
+                                            <tbody>
+
+                                            <{if !empty($data)}>
+                                            <{foreach $data as $item}>
+                                            <tr>
+                                                <td>
+                                                    <div class="icheck-primary">
+                                                        <input name="ids" type="checkbox" value="<{$item.id}>" id="check<{$item.id}>">
+                                                        <label for="check<{$item.id}>"></label>
+                                                    </div>
+                                                </td>
+                                                <td class="mailbox-star" data-id="<{$item.id}>">
+                                                    <span  >
+                                                        <{if $item.is_favorite}>
+                                                        <i title="取消收藏" class="fas fa-star text-warning"></i>
+                                                        <{else}>
+                                                        <i title="收藏" class="fas fa-star text-gray"></i>
+                                                        <{/if}>
+
+                                                    </span>
+                                                </td>
+                                                <td class="mailbox-name"><a href="javascript:void (0)" onclick="detail(this)" class="bs-blue" data-id="<{$item.id}>"><{$item.title}></a></td>
+                                                <td class="mailbox-subject"><b><{$item.msg_type_desc}></b> - <{$item.content}>
+                                                </td>
+                                                <td class="mailbox-read"  data-id="<{$item.id}>">
+                                                    <{if $item.read_time}>
+                                                    <i class="fa fa-eye bs-green"></i>
+                                                    <{else}>
+                                                    <i class="fa fa-eye-slash bs-red"></i>
+                                                    <{/if}>
+
+                                                </td>
+                                                <td class="mailbox-date"><{$item.add_time}></td>
+                                            </tr>
+                                            <{/foreach}>
+                                            <{/if}>
+
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <{$page?$page->render():''}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+<script src="/static/adminlte/plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="/static/adminlte/plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="/static/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/static/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="/static/adminlte/plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="/static/adminlte/plugins/moment/moment.min.js"></script>
+<script src="/static/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="/static/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+<script>
+
+    function detail(obj){
+        var id = $(obj).data('id')
+        sendData("<{:url('msg')}>",{ac:'get',id:id},function (res) {
+            if (res.code==0){
+                layer.open({
+                    title:res.data.title,
+                    content:res.data.content
+                })
+            }
+        },true,false)
+    }
+
+    function action(type){
+        var values = [];
+        $("input[name='ids']:checked").each(function () {
+            values.push($(this).val());
+        });
+        if (values.length<1){
+            return layer.msg('请选记录');
+        }
+        if (type=='del_all'){
+            layer.confirm('确定要全部删除吗？',{title:'删除确认'},function () {
+                sendData("<{:url('msg_action')}>",{ac:'del_all',values:values},function (res) {
+                    if (res.code==0){
+                        location.reload()
+                    }
+                },false,false)
+            })
+        }else if (type=='read_all') {
+            layer.confirm('确定要标记为已读吗？',{title:'修改状态'},function () {
+                sendData("<{:url('msg_action')}>",{ac:'read_all',values:values},function (res) {
+                    if (res.code==0){
+                        location.reload()
+                    }
+                },false,false)
+            })
+        }
+    }
+    $(function () {
+        //Enable check and uncheck all functionality
+        $('.checkbox-toggle').click(function () {
+            var clicks = $(this).data('clicks')
+            if (clicks) {
+                //Uncheck all checkboxes
+                $('.mailbox-messages input[type=\'checkbox\']').prop('checked', false)
+                $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square')
+            } else {
+                //Check all checkboxes
+                $('.mailbox-messages input[type=\'checkbox\']').prop('checked', true)
+                $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square')
+            }
+            $(this).data('clicks', !clicks)
+        })
+
+        //Handle starring for font awesome
+        $('.mailbox-star').click(function (e) {
+            e.preventDefault()
+            //detect type
+            var $this = $(this).find('span > i');
+            var id = $(this).data('id');
+            var cclass    = $this.hasClass('text-warning')
+
+            if (cclass) {
+                $this.addClass('text-gray')
+                $this.removeClass('text-warning')
+            }else {
+                $this.removeClass('text-gray')
+                $this.addClass('text-warning')
+            }
+            sendData("msg_action",{ac:'favorite',id:id},function () {
+
+            },true,true)
+        });
+        $('.mailbox-read').click(function (e) {
+            e.preventDefault()
+            //detect type
+            var $this = $(this).find('i');
+            var id = $(this).data('id');
+            var cclass    = $this.hasClass('bs-red')
+
+            if (cclass) {
+                $this.removeClass('fa-eye-slash bs-red').addClass('fa-eye bs-green')
+            }else {
+                $this.removeClass('fa-eye bs-green').addClass('fa-eye-slash bs-red')
+            }
+            sendData("<{:url('msg_action')}>",{ac:'readstate',id:id},function () {
+
+            },true,true)
+        })
+    })
+</script>
+
+</body>
+</html>

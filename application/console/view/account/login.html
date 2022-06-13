@@ -1,0 +1,119 @@
+<!DOCTYPE html >
+<html lang="zh">
+<head>
+    <title>登陆</title>
+    <{include file="public/header" /}>
+</head>
+<body ontouchstart style="background:#323542;">
+<!--主体-->
+<div class="login-box">
+    <div class="lg-title">欢迎登录</div>
+    <div class="login-form">
+        <form action="#">
+            <div class="login-user-name common-div">
+            	<span class="eamil-icon common-icon">
+                	<img src="/static/mall/images/eamil.png" />
+                </span>
+                <input type="email" name="account" value="" placeholder="请输入您的账号" />
+            </div>
+            <div class="login-user-pasw common-div">
+            	<span class="pasw-icon common-icon">
+                	<img src="/static/mall/images/password.png" />
+                </span>
+                <input type="password" name="pwd" value="" placeholder="请输入您的密码" />
+            </div>
+            <span  class="login-btn common-div" onclick="submit()">登陆</span>
+
+            <span  class="login-oth-btn login-tmp-account common-div" style="display: none">游客登录</span>
+            <span   class="login-oth-btn login-wx-account common-div" style="display: none">微信登陆</span>
+
+            <{:token()}>
+        </form>
+    </div>
+    <div class="forgets">
+        <a href="<{:url('pwd_forget')}>">忘记密码？</a>
+        <a href="<{:url('reg')}>">免费注册</a>
+    </div>
+</div>
+<{include file="public/footer" /}>
+<script>
+    // const vConsole = new VConsole();
+    $(function () {
+        var code = bs_get_param('code');
+        var from = bs_get_param('from');
+        var bscode = bs_get_param('bscode');
+        $(".login-tmp-account").on('click',function () {
+            $.confirm('确定用游客身份登录吗？',function () {
+                bs_request("<{:url('do_login')}>",{
+                    from:'tmp_user',
+                },function (res) {
+                    $.toast(res.msg,res.code !=0?'cancel':'',function () {
+                        if (res.code==0){
+                            localStorage.setItem('user_token',res.data.token)
+                            location.href = res.data.url;
+                        }
+                    })
+
+                })
+            })
+        });
+        if (code||bscode){
+            wxlogin({
+                code:code,
+                from:from,
+                bscode:bscode,
+            })
+        }
+        $(".login-wx-account").on('click',function () {
+            wxlogin({})
+        });
+    })
+
+    function wxlogin(data) {
+        bs_request("<{:url('wx_login')}>",data,function (res) {
+            $.toast(res.msg,res.code !=0?'cancel':'',function () {
+                if (res.code==0){
+                    if (res.data.from=='code'){
+                        location.href = res.data.url
+                    }else {
+                        localStorage.setItem('user_token',res.data.token)
+                        location.href = res.data.url;
+                    }
+                }
+            })
+
+        })
+    }
+
+    function submit(){
+
+        var account = $("input[name='account']").val();
+        var pwd1 = $("input[name='pwd']").val();
+        var token = $("input[name='__token__']").val();
+
+        if (!account){
+            return   $.alert('账号未设置','温馨提示')
+        }
+
+        if ( !pwd1){
+            return   $.alert('密码未输入','温馨提示')
+        }
+
+        bs_request("<{:url('do_login')}>",{
+            account:account,
+            pwd:pwd1,
+            token:token,
+        },function (res) {
+            if (res.code==0){
+                localStorage.setItem('user_token',res.data.token)
+                location.href = res.data.url;
+            }else {
+                $.alert(res.msg)
+            }
+        })
+    }
+</script>
+</body>
+</html>
+
+

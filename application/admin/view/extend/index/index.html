@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <style>
+        .bg-info{
+            background-color: unset !important;
+        }
+        .info-box {
+            box-shadow:unset !important;
+            border-radius: 0.25rem;
+            background-color: #fff;
+            display: -ms-flexbox;
+            display: flex;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            padding: 0.5rem;
+            position: relative;
+            width: 100%;
+        }
+        .bs-app {
+            background: white;
+            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+            padding:10px;
+            margin-top: 5px;
+            min-height: 148.11px ;
+        }
+        .bs-app-btn{
+            text-align: right;
+        }
+        .bs-app-logo{
+            height: 70px;
+            width: 70px;
+        }
+        #uploadifive-upload_app>input[type="file"] {
+            width: 100px;
+        }
+        div#uploadifive-upload_app-queue {
+            display: inline;
+        }
+        #uploadifive-upload_app{
+            width: unset !important;
+            max-width: 100px;
+
+        }
+        div#uploadifive-upload_app {
+            line-height: unset !important;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <{if !empty($data)}>
+                    <{foreach $data as $item}>
+                    <div class="col-md-3 col-sm-6 col-12 ">
+                        <div class="bs-app">
+                            <div class="info-box">
+                            <span class="info-box-icon bg-info">
+                                <img class="bs-app-logo" src="<{$item.info.logo}>" alt="">
+                            </span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text" title="<{$item.info.name}>"><{$item.info.name}></span>
+                                    <span class="info-box-number"><{$item.info.version}></span>
+                                </div>
+                                <span  onclick="viewDesc(this)"  data-html="true" data-title="<{$item.info.desc}>" class="btn btn-xs btn-primary" style="width: 22px;height: 22px"  ><i class="fa fa-question-circle"></i></span>
+                            </div>
+
+
+                            <div class="bs-app-btn">
+                                <{if !empty($item.info.has_front_page)}>
+                                <a target="_blank" href="<{:url('/plugin/'.$item.info.plugin_tag.'.index/index')}>" title="进入首页" class="btn btn-xs btn-primary "><i class="fas fa-home"></i></a>
+                                <{/if}>
+
+                                <{if !empty($item.info.need_config)}>
+                                <a href="<{:url('setting',['tag'=>$item.info.plugin_tag])}>" title="进入配置" class="bs-left-10 btn btn-xs btn-default "><i class="fas fa-tools"></i></a>
+                                <{/if}>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <{/foreach}>
+                    <{else}>
+                    <div class="card">
+                        <div class="card-body">
+                            暂无应用，请到应用<a class="" href="<{:url('manager')}>">管理页面</a>上传或者启用！
+                        </div>
+                    </div>
+                    <{/if}>
+
+
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+<script>
+
+    function viewDesc(obj) {
+        layer.open({
+            title:0,
+            //area:['100%','500px'],
+            content:$(obj).data('title')
+        })
+    }
+</script>
+
+
+</body>
+</html>

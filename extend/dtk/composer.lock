@@ -1,0 +1,42 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "09628755cb2740ed7879b40e66d86abc",
+    "packages": [
+        {
+            "name": "dtk-developer/openapi-sdk-php",
+            "version": "v1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://gitee.com/dtk-developer/openapi-sdk-php.git",
+                "reference": "c5ddba23e24ab1b032bee7fe599ccff03ebfcaa3"
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "api/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "dataoke openapi sdk for php",
+            "time": "2021-12-03T06:44:49+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/user.index/index')}>">会员管理</a></li>
+                            <li class="breadcrumb-item active">会员操作</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+
+                            <form method="post" action="<{:url('edit_user')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="account">登录账号</label>
+                                        <input name="account" autocomplete="off" value="<{$data?$data.account:''}>" type="text" class="form-control" id="account" placeholder="登录账号">
+                                        <input type="hidden" name="uid" value="<{$data?$data.uid:''}>">
+                                        <span class="bs-red">用于登录的账号</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="password">登录密码</label>
+                                        <input name="pwd" autocomplete="off" value="" type="password" class="form-control" id="password" placeholder="要修改则填写新密码">
+                                        <span class="bs-red">不填则不修改</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="status">状态</label>
+                                        <select name="status" class="form-control" id="status">
+                                            <option  value="0">正常</option>
+                                            <option <{if !empty($data.status)&&$data.status=='1'}>selected<{/if}>  value="1">禁用</option>
+
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="remark">备注</label>
+                                        <textarea name="remark" id="remark" class="form-control"><{$data?$data.remark:''}></textarea>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit()
+                                    })" class="btn btn-primary">提交保存</button>
+
+                                    <a href="<{:url('index')}>" class="btn btn-outline-primary bs-left-30" >返回列表</a>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+</body>
+</html>

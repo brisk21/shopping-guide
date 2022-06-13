@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="/static/adminlte/plugins/jsTree/style.min.css">
+    <style>
+        .jstree-default .jstree-anchor {
+            line-height: 24px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper bs-top-30">
+
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="form-group">
+                            <a class="btn btn-default btn-sm " href="<{:url('/admin/auth.auser/role')}>" title="返回"><i class="fas fa-arrow-left"></i></a>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="wrapper wrapper-content animated fadeInRight">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
+                                            <h5>权限管理</h5>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div id="jstree" class="jstree jstree-1 jstree-default" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant=" " aria-busy="false">
+
+                                                <{if !empty($data)}>
+                                                <{foreach $data as $one}>
+                                                <ul class="jstree-container-ul jstree-children" role="group">
+                                                    <li role="treeitem" data-jstree='{"icon" : "fas list-alt"}' aria-selected="false" aria-level="1" aria-labelledby="j1_21_anchor" aria-expanded="true"  class="jstree-node jstree-node jstree-node   jstree-last  jstree-open">
+                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                                                        <a class="jstree-anchor jstree-anchor jstree-anchor" href="#" tabindex="-1" id="">
+                                                            <i class="jstree-icon jstree-themeicon  jstree-themeicon-custom" role="presentation"></i>
+                                                            <input <{if !empty($one.checked)}> checked <{/if}> type="checkbox" name="ids" value="<{$one.id}>"><{$one.name}>
+                                                        </a>
+                                                        <{if !empty($one['subcat'])}>
+                                                        <ul role="group" class="jstree-children">
+                                                            <{foreach $one['subcat'] as $two}>
+                                                            <li role="treeitem" data-jstree='{"icon" : "fa fa-trash-o"}' aria-selected="false" aria-level="2" aria-labelledby="j1_22_anchor" aria-expanded="true" class="jstree-node jstree-node jstree-node    jstree-open">
+                                                                <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                                                                <a class="jstree-anchor jstree-anchor jstree-anchor" href="#"  tabindex="-1" >
+                                                                    <i class="jstree-icon jstree-themeicon  jstree-themeicon-custom"  role="presentation"></i>
+                                                                    <input <{if !empty($two.checked)}> checked <{/if}> type="checkbox" name="ids" value="<{$two.id}>">
+                                                                    <{$two.name}>
+                                                                </a>
+                                                                <{if !empty($two['subcat'])}>
+                                                                <ul role="group" class="jstree-children">
+                                                                    <{foreach $two['subcat'] as $three}>
+                                                                    <li role="treeitem" data-jstree='{"icon" : "fa fa-trash-o"}' aria-selected="false" aria-level="3" aria-labelledby="j1_23_anchor" class="jstree-node jstree-node  jstree-leaf jstree-last jstree-leaf jstree-last">
+                                                                        <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                                                                        <a class="jstree-anchor  jstree-anchor  jstree-anchor" href="#" tabindex="-1"  >
+                                                                            <i class="jstree-icon jstree-themeicon  jstree-themeicon-custom" role="presentation"></i>
+                                                                            <input <{if !empty($three.checked)}> checked <{/if}> class="ids" type="checkbox" name="ids" value="<{$three.id}>">
+                                                                            <{$three.name}>
+                                                                        </a>
+                                                                    </li>
+                                                                    <{/foreach}>
+                                                                </ul>
+                                                                <{/if}>
+                                                            </li>
+                                                            <{/foreach}>
+                                                        </ul>
+                                                        <{/if}>
+
+                                                    </li>
+                                                </ul>
+                                                <{/foreach}>
+                                                <{/if}>
+                                            </div>
+                                            <a class="btn btn-default btn-sm  select-all" href="javascript:void (0)" title="全选"><i class="fas fa-check-square"></i></a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="javascript:void(0) " onclick="edit()" class="btn btn-success">提交</a>
+
+                        <a href="<{:url('/admin/auth.auser/role')}>" class="btn btn-default bs-left-30">返回角色列表</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<script src="/static/adminlte/plugins/jsTree/jstree.min.js"></script>
+<script>
+    var id = '<{$Request.param.id}>';
+    $(function () {
+        $('#jstree').jstree();
+        $("input[name='ids']").on('click', function (e) {
+            e.stopPropagation(); //停止事件冒泡，但是不会阻止默认行为
+            var obj = $(this);
+            var pid = obj.attr('data-pid');
+            //var id = obj.attr('data-id');
+
+            var child = $(this).parent().siblings("ul").find('input');
+            if ($(this).prop('checked')) {
+                child.each(function () {
+                    this.checked = true;//所属子级选中
+                })
+            } else {
+                child.each(function () {
+                    this.checked = false;
+                })
+            }
+
+            var parent = $("input[data-id='" + pid + "']");//上级
+            var parentPid = parent.attr('data-pid');
+            if (!parent.prop('checked')) {
+                parent.prop('checked', true);//上级
+                $("input[data-id='" + parentPid + "']").prop('checked', true);//上上级
+            } else {
+                var tongJi = $("input[data-pid='" + pid + "']");//同级
+                var tongJiCheckedCount = 0;
+                tongJi.each(function () {
+                    if (this.checked === true) {
+                        tongJiCheckedCount++;
+                    }
+                });
+                //下级都无选中，则上级不选
+                /*if (tongJiCheckedCount === 0) {
+                    parent.prop('checked', false);//上级
+
+                    var fuBei = $("input[data-pid='" + parentPid + "']");//父辈
+                    var fuBeiCheckedCount = 0;
+                    fuBei.each(function () {
+                        if (this.checked === true) {
+                            fuBeiCheckedCount++;
+                        }
+                    });
+                    if (fuBeiCheckedCount === 0) {
+                        $("input[data-id='" + parentPid + "']").prop('checked', false)//上上级
+                    }
+                }*/
+            }
+        });
+    });
+    $(".select-all").on('click', function () {
+        if (!$(this).hasClass('bs-green')) {
+            $(this).addClass('bs-green')
+            $("input[name='ids']").each(function () {
+                $(this).prop("checked", true);
+            });
+        } else {
+            $(this).removeClass('bs-green')
+            $("input[name='ids']").each(function () {
+                if ($(this).prop("checked")) {
+                    $(this).prop("checked", false);
+                } else {
+                    $(this).prop("checked", true);
+                }
+            });
+        }
+    })
+
+
+    function edit() {
+        var values = [];
+        $("input[name='ids']:checked").each(function () {
+            values.push($(this).val());
+        });
+        layer.confirm('确定编辑吗?',{title:0}, function () {
+            sendData("<{:url('/admin/auth.auser/role_auth_action')}>", {ids: values,id:id}, function (res) {
+                if (res.code == 0) {
+                    location.reload(1);
+                }
+            })
+        })
+    }
+
+</script>
+</body>
+</html>

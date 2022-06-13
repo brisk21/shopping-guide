@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>管理员操作</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/auth.auser/index')}>">管理列表</a></li>
+                            <li class="breadcrumb-item active">管理员操作</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">管理操作</h3>
+                            </div>
+
+                            <form method="post" action="<{:url('/admin/auth.auser/action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="user_name">账号名称</label>
+                                        <input name="user_name" value="<{$data?$data.user_name:''}>" type="text" class="form-control" id="user_name" placeholder="请输入账户昵称">
+                                        <input type="hidden" name="id" value="<{$data?$data.id:'0'}>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="account">登录账号</label>
+                                        <input name="account" value="<{$data?$data.account:''}>" type="text" class="form-control" id="account" placeholder="请输入登录账号">
+                                      <span class="bs-red">字符串，手机号，邮箱等。</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd1">登录密码</label>
+                                        <input name="pwd1" value="" type="password" class="form-control" id="pwd1" placeholder="登录密码">
+                                        <{if !empty($data)}>
+                                        <span class="bs-red">不填写则默认不修改！</span>
+                                        <{/if}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd2">登录密码</label>
+                                        <input name="pwd2" value="" type="password" class="form-control" id="pwd2" placeholder="确认登录密码">
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="role_id">选择角色</label>
+                                        <select name="role_id" id="role_id" class="form-control">
+                                            <option value="0">超级管理</option>
+                                            <{if !empty($roles)}>
+                                            <{foreach $roles as $r}>
+                                            <option <{:isset($data.role_id) && $data.role_id==$r.id?'selected':''}> value="<{$r.id}>"><{$r.name}></option>
+                                            <{/foreach}>
+                                            <{/if}>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="desc">简单描述</label>
+                                        <textarea  name="desc" class="form-control"  id="desc" rows="3" placeholder="简单描述"><{$data?$data.user_desc:''}></textarea>
+                                    </div>
+
+                                    <div class="form-group" style="margin-top: 10px">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6">
+                                                <div class="form-group clearfix">
+                                                    <div class="icheck-primary d-inline">
+                                                        <{if !empty($data) && $data['status']=='0'}>
+                                                        <input type="checkbox" id="status" name="status" >
+                                                        <{else}>
+                                                        <input type="checkbox" id="status" name="status" checked>
+                                                        <{/if}>
+                                                        <label for="status">
+                                                            启用
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="card-footer">
+                                    <button type="button" onclick="form_submit()" class="btn btn-primary">提交保存</button>
+
+                                    <a href="<{:url('/admin/auth.auser/index')}>" class="btn btn-default bs-left-30">返回列表</a>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <!-- daterange picker -->
+   <!-- <link rel="stylesheet" href="/static/adminlte/plugins/daterangepicker/daterangepicker.css">-->
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/adminlte/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">微信配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">公众号配置</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+                            <div class="alert alert-warning">
+                                授权需要在公众号提取以下信息；给公众号授权域名添加当前请求的域名；在微信支付时需要用openid，如果需要获取用户头像和昵称信息则需要在公众号后台配置IP白名单。要配置微信支付请到这里：<a href="<{:url('pay')}>">微信支付</a>
+                            </div>
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('wechat_action',['from'=>'wechat'])}>" id="wechat">
+
+
+                                    <div class="form-group">
+                                        <label for="pt">接口平台</label>
+                                        <select name="pt" class="form-control" id="pt">
+                                            <option <{if !empty($data.gzh.pt)&&$data.gzh.pt=='wechat'}>selected<{/if}>  value="gzh">公众号</option>
+                                            <option <{if !empty($data.gzh.pt)&&$data.gzh.pt=='wei1-top'}>selected<{/if}>  value="wei1-top">授权中转</option>
+
+                                        </select>
+                                        <span class="bs-red">有自己认证的请选择公众号，中转模式需要到 <a target="_blank" href="https://wxauth.alipay168.cn/admin/domain/index">https://wxauth.alipay168.cn/</a> 申请配置</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="akey">akey</label>
+                                        <input name="akey" autocomplete="off" value="<{:isset($data.gzh.akey)?$data.gzh.akey:''}>" type="text" class="form-control" id="akey" placeholder="akey">
+                                        <span class="bs-red">中转平台的akey，接口平台选择中转时需要填写。</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="userinfo">是否获取信息</label>
+                                        <select name="userinfo" class="form-control" id="userinfo">
+                                            <option <{if empty($data.userinfo)}>selected<{/if}>  value="0">不获取</option>
+                                            <option <{if !empty($data.userinfo)}>selected<{/if}>  value="1">获取</option>
+
+
+                                        </select>
+                                        <span class="bs-red">获取用户信息(头像、昵称)需要授权、IP白名单，不建议使用（保存逻辑自行开发）</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="appid">公众号appid</label>
+                                        <input name="appid" autocomplete="off" value="<{:isset($data.gzh.appid)?$data.gzh.appid:''}>" type="text" class="form-control" id="appid" placeholder="公众号appid">
+                                        <span class="bs-red">公众号的APPID，需要认证的服务号才可以获取用户的openid</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="appSecret">公众号appSecret</label>
+                                        <input name="appSecret" autocomplete="off" value="<{:isset($data.gzh.appSecret)?$data.gzh.appSecret:''}>" type="password" class="form-control" id="appSecret" placeholder="公众号appSecret">
+                                        <span class="bs-red">公众号的appSecret，需要认证的服务号才可以获取用户的openid</span>
+                                    </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                     form_submit([],'',false,false,'wechat')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+
+</body>
+</html>

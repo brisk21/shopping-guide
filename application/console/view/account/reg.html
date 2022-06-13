@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<title>账号注册</title>
+  <{include file="public/header" /}>
+    <style>
+        .reg-type1,.reg-type2,.reg-type3,.reg-type4{
+            display: none;
+        }
+    </style>
+</head>
+<body ontouchstart>
+<!--主体-->
+<header class="wy-header">
+  <div class="wy-header-icon-back"><span></span></div>
+  <div class="wy-header-title">账号注册</div>
+</header>
+<div class="weui-content reg-div">
+  <div class="weui-cells weui-cells_form  wy-address-edit">
+
+      <!--任意字符串-->
+    <div class="reg-type4">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label wy-lab">登录账号</label></div>
+            <div class="weui-cell__bd"><input class="weui-input" name="account" type="text"   placeholder="请输入邮箱或者其他字符串"></div>
+        </div>
+
+        <div class="weui-cell weui-cell_vcode">
+            <div class="weui-cell__hd"><label class="weui-label wy-lab">验证码</label></div>
+            <div class="weui-cell__bd"><input class="weui-input"  name="vcode" type="text" placeholder="请输入验证码"></div>
+            <div class="weui-cell__ft" ><img class="weui-vcode-img" src="<{:url('get_vcode')}>"></div>
+        </div>
+    </div>
+
+      <!--手机、邮箱、手机或者邮箱-->
+      <div class="reg-type1 reg-type2 reg-type3">
+          <div class="weui-cell weui-cell_vcode">
+              <div class="weui-cell__hd"><label class="weui-label wy-lab">验证码</label></div>
+              <div class="weui-cell__bd"><input class="weui-input"  name="vcode" type="text" placeholder="请输入验证码"></div>
+              <div class="weui-cell__ft"  ><img class="weui-vcode-img" src="<{:url('get_vcode')}>"></div>
+          </div>
+          <div class="weui-cell weui-cell_vcode">
+              <div class="weui-cell__hd"><label class="weui-label wy-lab">账号</label></div>
+              <div class="weui-cell__bd"><input class="weui-input" type="text" name="account" placeholder="请输入手机号/邮箱"></div>
+              <div class="weui-cell__ft"><button class="weui-vcode-btn">获取验证码</button></div>
+          </div>
+          <div class="weui-cell">
+              <div class="weui-cell__hd"><label class="weui-label wy-lab">动态码</label></div>
+              <div class="weui-cell__bd"><input class="weui-input" name="dcode" type="text"   placeholder="请输入动态码"></div>
+          </div>
+      </div>
+
+
+
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">设置密码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" type="password" name="pwd1"  placeholder="请输入新密码"></div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">确认密码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" type="password" name="pwd2"  placeholder="请再次输入新密码"></div>
+    </div>
+
+  </div>
+  <label for="weuiAgree" class="weui-agree">
+    <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox" checked="checked">
+    <span class="weui-agree__text">阅读并同意<a href="javascript:void(0);">《注册协议》</a></span>
+  </label>
+  <div class="weui-btn-area"><a href="javascript:submit();" class="weui-btn weui-btn_warn">注册并登陆</a></div>
+  <div class="weui-cells__tips t-c font-12">登陆账号为您输入的手机号码</div>
+  <div class="weui-cells__tips t-c pd-10"><a href="<{:url('/mall/account/xieyi')}>" class="weui-cell_link font-12">查看注册协议</a></div>
+  <{:token()}>
+</div>
+
+<{include file="public/footer" /}>
+
+<script>
+  $(function () {
+    $(".weui-vcode-img").on('click',function () {
+      resetVcode()
+    });
+    $(".weui-vcode-btn").on('click',function () {
+        var account = $("input[name='account']").val();
+        var vcode = $("input[name='vcode']").val();
+        if (!vcode){
+            return   $.alert('请输入图形验证码','温馨提示')
+        }
+        if (!account){
+            return   $.alert('请填写登录账户','温馨提示')
+        }
+        bs_request("<{:url('get_dcode')}>",{account:account,vcode:vcode},function (res) {
+            resetVcode();
+            if (res.code != 0){
+                return   $.toast(res.msg,'cancel')
+            }
+            return   $.toast(res.msg,'success')
+        })
+
+    })
+  })
+  function resetVcode(){
+    $(".weui-vcode-img").attr('src',"<{:url('get_vcode')}>")
+  }
+
+  function submit(){
+    var account = $("input[name='account']").val();
+    var vcode = $("input[name='vcode']").val();
+    var dcode = $("input[name='dcode']").val();
+    var pwd1 = $("input[name='pwd1']").val();
+    var pwd2 = $("input[name='pwd2']").val();
+    var token = $("input[name='__token__']").val();
+
+    if (!account){
+      return   $.alert('账号未设置','温馨提示')
+    }
+    if (!vcode){
+      return   $.alert('请输入图形验证码','温馨提示')
+    }
+    if (pwd1 != pwd2 || !pwd1){
+      return   $.alert('密码不合法或未设置','温馨提示')
+    }
+
+    bs_request("<{:url('reg_action')}>",{
+      account:account,
+      vcode:vcode,
+      pwd1:pwd1,
+      pwd2:pwd2,
+      token:token,
+      dcode:dcode,
+    },function (res) {
+      resetVcode();
+      if (!res){
+        return $.alert('网络超时');
+      }
+      if (res.code==0){
+        //跳转登录页面
+          if (res.data.token){
+              localStorage.setItem('user_token',res.data.token);
+              location.href = res.data.url
+          }else {
+              location.href = res.data.url
+          }
+      }else {
+        $.alert(res.msg)
+      }
+    });
+
+
+  }
+</script>
+</body>
+</html>

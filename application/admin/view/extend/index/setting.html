@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/extend.index/manager')}>">应用管理</a></li>
+                            <li class="breadcrumb-item active">应用配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+                            <div class="card-body">
+                                <form   id="check-form"  method="post" action="<{:url('setting_update')}>">
+                                    <input type="hidden" name="tag" value="<{$Request.param.tag}>">
+
+                                    <{if !empty($element)}>
+                                    <{foreach $element as $item}>
+                                    <div class="form-group">
+                                        <label class=" "><{$item.title}></label>
+
+
+                                        <{if $item['element']=='input'}>
+                                        <input type="<{$item.type}>" <{if $item.is_required==true}>require<{/if}> class="form-control" value="<{$data[$item.name]?$data[$item.name]:$item.default}>"  autocomplete="off"
+                                               placeholder="<{$item.placeholder}>"  name="<{$item.name}>">
+
+                                        <{elseif $item['element']=='select'/}>
+                                        <select class="form-control" name="<{$item.name}>" >
+                                            <option value="">请选择</option>
+                                            <{foreach $item['element_data'] as $option}>
+                                            <option <{if !empty($data[$item['name']])&&$data[$item['name']]==$option.value}>selected<{/if}>  value="<{$option.value}>"><{$option.name}></option>
+                                            <{/foreach}>
+
+                                        </select>
+                                        <{elseif $item['element'] =='textarea'/}>
+                                        <textarea name="<{$item.name}>"  class="form-control" placeholder="<{$item.placeholder}>" style="height: 150px"><{$data[$item.name]?$data[$item.name]:$item.default}></textarea>
+                                        <{/if}>
+                                        <{if !empty($item['label_desc'])}>
+
+                                        <span class="bs-red"><{$item.label_desc}></span>
+                                        <{/if}>
+
+                                    </div>
+
+
+                                    <{/foreach}>
+
+                                    <{/if}>
+
+
+
+
+                                    <div class=" form-group">
+                                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                                            <a class="btn btn-success radius" onclick="save()">&nbsp;&nbsp;提交保存&nbsp;&nbsp;</a>
+                                            <a class="btn btn-default radius bs-left-20" target="_parent" href="<{:url('manager')}>">&nbsp;&nbsp;返回&nbsp;&nbsp;</a>
+                                        </div>
+                                    </div>
+
+                              </form>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<script>
+    function save(){
+        form_submit([])
+    }
+</script>
+
+</body>
+</html>

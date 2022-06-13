@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <!-- daterange picker -->
+   <!-- <link rel="stylesheet" href="/static/adminlte/plugins/daterangepicker/daterangepicker.css">-->
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/adminlte/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">上传参数配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">七牛云</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('/admin/system.index/upload_action',['from'=>'qiniu'])}>" id="qiniu">
+                                    <div class="form-group">
+                                        <label for="accessKey">accessKey</label>
+                                        <input name="accessKey" autocomplete="off" value="<{:isset($data.qiniu.accessKey)?$data.qiniu.accessKey:''}>" type="text" class="form-control" id="accessKey" placeholder="七牛云后台accessKey">
+                                        <span class="bs-red">七牛云后台accessKey</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="secretKey">secretKey</label>
+                                        <input name="secretKey" autocomplete="off" value="<{:isset($data.qiniu.secretKey)?$data.qiniu.secretKey:''}>" type="password" class="form-control" id="secretKey" placeholder="七牛云后台secretKey">
+                                        <span class="bs-red">七牛云后台secretKey</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bucket">bucket名称</label>
+                                        <input name="bucket" autocomplete="off" value="<{:isset($data.qiniu.bucket)?$data.qiniu.bucket:''}>" type="text" class="form-control" id="bucket" placeholder="保存文件的bucket">
+                                        <span class="bs-red">bucket</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="domain">访问域名</label>
+                                        <input name="domain" autocomplete="off" value="<{:isset($data.qiniu.domain)?$data.qiniu.domain:''}>" type="text" class="form-control" id="domain" placeholder="七牛云绑定bucket的域名">
+                                        <span class="bs-red">末尾带上斜杠，如https://xxxx.cn/</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                     form_submit([],'',false,false,'qiniu')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+
+                <!--阿里云start-->
+                <div class="card card-purple">
+                    <div class="card-header">
+                        <h3 class="card-title">阿里云OSS配置</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('/admin/system.index/upload_action',['from'=>'oss'])}>" id="oss">
+
+                                    <div class="form-group">
+                                        <label for="aliyun_accessKeyId">accessKeyId</label>
+                                        <input name="accessKeyId" autocomplete="off" value="<{:isset($data.oss.accessKeyId)?$data.oss.accessKeyId:''}>" type="text" class="form-control" id="aliyun_accessKeyId" placeholder="accessKeyId">
+                                        <span class="bs-red">阿里云accessKeyId</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_accessKeySecret">accessKeySecret</label>
+                                        <input name="accessKeySecret" autocomplete="off" value="<{:isset($data.oss.accessKeySecret)?$data.oss.accessKeySecret:''}>" type="text" class="form-control" id="aliyun_accessKeySecret" placeholder="accessKeySecret">
+                                        <span class="bs-red">阿里云accessKeySecret</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_Endpoint">Endpoint（地域节点）</label>
+                                        <input name="endpoint" autocomplete="off" value="<{:isset($data.oss.endpoint)?$data.oss.endpoint:''}>" type="text" class="form-control" id="aliyun_Endpoint" placeholder="endpoint">
+                                        <span class="bs-red">阿里云Endpoint，如
+oss-cn-beijing.aliyuncs.com</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="oss_bucket">bucket名称</label>
+                                        <input name="bucket" autocomplete="off" value="<{:isset($data.oss.bucket)?$data.oss.bucket:''}>" type="text" class="form-control" id="oss_bucket" placeholder="保存文件的bucket">
+                                        <span class="bs-red">bucket</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_domain">访问域名</label>
+                                        <input name="domain" autocomplete="off" value="<{:isset($data.oss.domain)?$data.oss.domain:''}>" type="text" class="form-control" id="aliyun_domain" placeholder="从oss后台获取">
+                                        <span class="bs-red">Bucket 域名，末尾带上斜杠，如https://bsshop.oss-cn-xxx.aliyuncs.com/</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit([],'',false,false,'oss')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+function test() {
+    var v = $("input[name='test']").val();
+    sendData("<{:url('sms_test')}>",{email:v},function (res) {
+        layer.msg(res.msg,{icon:res.code==0?6:5},function () {
+
+        })
+    },true)
+}
+</script>
+
+</body>
+</html>

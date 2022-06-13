@@ -1,0 +1,34 @@
+<?php
+/**
+ * 示例接口名称：pdd.voucher.physical.goods.send
+*/
+require_once dirname(__FILE__).'/Config.php';
+require_once dirname(__FILE__)."/../vendor/autoload.php";
+
+use Com\Pdd\Pop\Sdk\PopHttpClient;
+use Com\Pdd\Pop\Sdk\Api\Request\PddVoucherPhysicalGoodsSendRequest;
+$client = new PopHttpClient(Config::$clientId, Config::$clientSecret);
+
+$request = new PddVoucherPhysicalGoodsSendRequest();
+
+$request->setOrderSn('str');
+$request->setOutBizNo('str');
+$request->setVoucherList();
+$request->setLogisticsType(1);
+$request->setRecipient('str');
+$request->setRecipientMobile('str');
+$request->setRecipientAddress('str');
+$request->setLogisticsNo('str');
+$request->setLogisticsCompanyId('str');
+$request->setLogisticsCompany('str');
+try{
+	$response = $client->syncInvoke($request);
+} catch(Com\Pdd\Pop\Sdk\PopHttpException $e){
+	echo $e->getMessage();
+	exit;
+}
+$content = $response->getContent();
+if(isset($content['error_response'])){
+	echo "异常返回";
+}
+echo json_encode($content,JSON_UNESCAPED_UNICODE);

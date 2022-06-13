@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">邮箱配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">发信配置操作</h3>
+                            </div>
+
+                            <form method="post" action="<{:url('/admin/system.index/email_action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="host">SMTP发送域名</label>
+                                        <input name="host" autocomplete="off" value="<{$data?$data.host:''}>" type="text" class="form-control" id="host" placeholder="请输入邮件服务器域名">
+                                        <span class="bs-red">如：smtp.163.com</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="username">发送账号</label>
+                                        <input name="username" autocomplete="off" value="<{$data?$data.username:''}>" type="text" class="form-control" id="username" placeholder="请输入发送账号">
+                                        <span class="bs-red">如：bsshop@163.com</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nickname">发送昵称</label>
+                                        <input name="nickname" autocomplete="off" value="<{$data?$data.nickname:''}>" type="text" class="form-control" id="nickname" placeholder="请输入发送昵称">
+                                        <span class="bs-red">如：bs-shop开源商城</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd">授权码</label>
+                                        <input name="pwd" value="<{$data?$data.pwd:''}>" type="password" class="form-control" id="pwd" placeholder="授权密码">
+                                        <span class="bs-red">如163邮箱设备授权码</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="port">发送端口</label>
+                                        <input name="port" autocomplete="off" value="<{$data?$data.port:'465'}>" type="number" class="form-control" id="port" placeholder="请输入发送端口">
+                                        <span class="bs-red">如：根据自己的邮件smtp、pop端口配置</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="encryption">发送加密协议</label>
+                                        <select name="encryption" class="form-control" id="encryption">
+                                            <option <{if !empty($data.encryption)&&$data.encryption=='ssl'}>selected<{/if}>  value="ssl">SSL</option>
+                                            <option <{if !empty($data.encryption)&&$data.encryption=='tls'}>selected<{/if}> value="tls">TLS</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="isHtml">是否为HTML格式</label>
+                                        <select name="isHtml" class="form-control" id="isHtml">
+                                            <option <{if !empty($data.isHtml)&&$data.encryption=='1'}>selected<{/if}>  value="1">是</option>
+                                            <option <{if empty($data.isHtml)}>selected<{/if}> value="0">否</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="t">测试接收</label>
+                                        <input name="test" autocomplete="off"  type="email" class="form-control" id="t" placeholder="测试邮箱，123@qq.com">
+                                        <span class="bs-red">请先保存后测试，点击 <a class="btn btn-warning btn-xs" href="javascript:test()">测试</a></span>
+                                    </div>
+                                </div>
+
+
+                                <div class="card-footer">
+                                    <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit()
+                                    })" class="btn btn-primary">提交保存</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+function test() {
+    var v = $("input[name='test']").val();
+    sendData("<{:url('email_test')}>",{email:v},function (res) {
+        layer.msg(res.msg,{icon:res.code==0?6:5},function () {
+
+        })
+    },true)
+}
+</script>
+
+</body>
+</html>

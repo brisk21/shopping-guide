@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <!-- daterange picker -->
+   <!-- <link rel="stylesheet" href="/static/adminlte/plugins/daterangepicker/daterangepicker.css">-->
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/adminlte/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">短信配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">云片配置</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('/admin/system.index/sms_action',['from'=>'yunpian'])}>" id="yunpian">
+                                    <div class="form-group">
+                                        <label for="yunpian_sms_tpl">通用短信模板</label>
+                                        <textarea name="sms_tpl" autocomplete="off"   class="form-control" id="yunpian_sms_tpl" placeholder="通用短信模板,如注册、修改密码、登录的验证码"><{:isset($data.yunpian.sms_tpl)?$data.yunpian.sms_tpl:'您的验证码是#code#。如非本人操作，请忽略本短信'}></textarea>
+                                        <span class="bs-red">通用短信模板,如注册、修改密码、登录的验证码</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="apikey">apikey</label>
+                                        <input name="api_key" autocomplete="off" value="<{:isset($data.yunpian.api_key)?$data.yunpian.api_key:''}>" type="password" class="form-control" id="apikey" placeholder="云片后台的apikey">
+                                        <span class="bs-red">云片后台的apikey</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                     form_submit([],'',false,false,'yunpian')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+
+                <!--阿里云start-->
+                <div class="card card-purple">
+                    <div class="card-header">
+                        <h3 class="card-title">阿里云大鱼配置</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('/admin/system.index/sms_action',['from'=>'aliyun'])}>" id="aliyun">
+
+                                    <div class="form-group">
+                                        <label for="aliyun_accessKeyId">accessKeyId</label>
+                                        <input name="accessKeyId" autocomplete="off" value="<{:isset($data.aliyun.accessKeyId)?$data.aliyun.accessKeyId:''}>" type="text" class="form-control" id="aliyun_accessKeyId" placeholder="accessKeyId">
+                                        <span class="bs-red">阿里云短accessKeyId</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_accessKeySecret">accessKeyId</label>
+                                        <input name="accessKeySecret" autocomplete="off" value="<{:isset($data.aliyun.accessKeySecret)?$data.aliyun.accessKeySecret:''}>" type="password" class="form-control" id="aliyun_accessKeySecret" placeholder="accessKeySecret">
+                                        <span class="bs-red">阿里云短accessKeySecret</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_sms_sign">短信签名</label>
+                                        <input name="sms_sign" autocomplete="off" value="<{:isset($data.aliyun.sms_sign)?$data.aliyun.sms_sign:''}>" type="text" class="form-control" id="aliyun_sms_sign" placeholder="短信签名">
+                                        <span class="bs-red">阿里云短信签名，如"bs-商城”</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aliyun_sms_id">模板ID</label>
+                                        <input name="sms_id" autocomplete="off" value="<{:isset($data.aliyun.sms_id)?$data.aliyun.sms_id:''}>" type="text" class="form-control" id="aliyun_sms_id" placeholder="阿里云短信模板ID">
+                                        <span class="bs-red">阿里云短信模板ID</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit([],'',false,false,'aliyun')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+function test() {
+    var v = $("input[name='test']").val();
+    sendData("<{:url('sms_test')}>",{email:v},function (res) {
+        layer.msg(res.msg,{icon:res.code==0?6:5},function () {
+
+        })
+    },true)
+}
+</script>
+
+</body>
+</html>

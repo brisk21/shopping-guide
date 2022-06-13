@@ -1,0 +1,13 @@
+{
+    "name": "dtk-developer/openapi-sdk-php",
+    "description": "dataoke openapi sdk for php",
+    "license": "MIT",
+    "type": "library",
+    "minimum-stability": "dev",
+    "require": {
+        "php":">=7.0.0"
+    },
+    "autoload": {
+        "classmap": ["api/"]
+    }
+}

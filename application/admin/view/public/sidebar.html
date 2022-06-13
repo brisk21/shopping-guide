@@ -1,0 +1,108 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="<{:url('/admin/index/index')}>" class="brand-link">
+        <img src="/static/adminlte/img/bs_128.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">
+            VIP版<{:isset($webConf.version)?$webConf.version:'v1.0'}>
+        </span>
+
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <!-- Sidebar user (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="/static/adminlte/img/user-d.jpg" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="javascript:location.reload();" class="d-block">超级管理</a>
+            </div>
+        </div>
+
+        <!-- SidebarSearch Form -->
+        <div class="form-inline">
+            <div class="input-group" data-widget="sidebar-search">
+                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-sidebar">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <{if !empty($menu)}>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <{foreach $menu as $item}>
+                <{if $item.type==0}>
+                <?php continue;?>
+                <{/if}>
+
+                <li class="nav-item">
+                    <a href="<{:url($item.url)}>" class="nav-link">
+                        <i class="nav-icon fas <{$item.class_name}>"></i>
+                        <p>
+                            <{$item.name}>
+                            <i class="right fas fa-angle-left"></i>
+                            <{if $item.is_new}>
+                            <span class="right badge badge-danger">New</span>
+                            <{/if}>
+
+                        </p>
+                    </a>
+                    <{if !empty($item.subcat)}>
+                    <ul class="nav nav-treeview"  >
+                        <{foreach $item.subcat as $sub}>
+                        <{if $sub.type==0}>
+                        <?php continue;?>
+                        <{/if}>
+                        <li class="nav-item">
+                            <a href="<{:url($sub.url)}>" class="nav-link">
+                                <i class="nav-icon fas <{$sub.class_name}> "></i>
+                                <p><{$sub.name}>
+                                    <!--<i class="right fas fa-angle-left"></i>-->
+                                    <{if $sub.is_new}>
+                                    <span class="right badge badge-danger">New</span>
+                                    <{/if}>
+                                </p>
+                            </a>
+                            <!--三级菜单-->
+                            <!-- <{if !empty($sub.subcat)}>
+                             <ul class="nav nav-treeview ">
+                                 <{foreach $item.subcat as $three}>
+                                 <{if $three.type==0}>
+                                 <?php continue;?>
+                                 <{/if}>
+                                 <li class="nav-item">
+                                     <a href="<{$three.url}>" class="nav-link">
+                                         <i class="nav-icon fas <{$three.class_name}> "></i>
+                                         <p><{$three.name}>
+                                             <{if $three.is_new}>
+                                             <span class="right badge badge-danger">New</span>
+                                             <{/if}>
+                                         </p>
+                                     </a>
+                                 </li>
+                                 <{/foreach}>
+                             </ul>
+                             <{/if}>-->
+                            <!--三级菜单end-->
+                        </li>
+                        <{/foreach}>
+                    </ul>
+                    <{/if}>
+                </li>
+                <{/foreach}>
+                <{/if}>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+
+</aside>

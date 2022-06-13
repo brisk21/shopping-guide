@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">安全配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+
+                            <form method="post" action="<{:url('/admin/system.index/safe_action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="api_limit_set_second">路由限流</label>
+                                        <input name="api_limit_set_second" autocomplete="off" value="<{$data?$data.api_limit_set_second:'0'}>" type="text" class="form-control" id="api_limit_set_second" placeholder="每秒限制请求量，默认10">
+                                        <span class="bs-red">同一个接口（路由）每秒钟最大可请求次数，针对同一个IP有效，防止某些行为恶意请求。默认20次自动加入IP黑名单，请求10次就添加到可疑列表（可以快速添加到黑名单）。</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sensitive_words">是否过滤敏感词汇</label>
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-success d-block ">
+                                                <input type="checkbox" name="sensitive_words" id="sensitive_words" <{if !empty($data.sensitive_words)}>checked<{/if}>  >
+                                                <label for="sensitive_words">
+                                                    启用
+                                                </label>
+                                            </div>
+                                            <span class="bs-red">开启后可以过滤一些黄赌毒相关的词汇，避免订单留言、反馈的时候恶意提交。词汇更新文件在/extend/safe/sex.php这个文件里面，返回一个数据组即可。</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit()
+                                    })" class="btn btn-primary">提交保存</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+</body>
+</html>

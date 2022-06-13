@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+    <title>登录</title>
+
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="/static/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+        <div class="card-header text-center">
+            <a href="#" class="h1">BS_SHOP</a>
+        </div>
+        <div class="card-body">
+            <p class="login-box-msg">登录开始使用bs_shop系统</p>
+
+            <form action="<{:url('do_login')}>" method="post" id="check-form">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="account" placeholder="账号">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-users"></span>
+                        </div>
+                    </div>
+                    <{:token()}>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" name="pwd" placeholder="登录密码">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8">
+                        <div class="icheck-primary">
+                            <input type="checkbox" name="remember" id="remember">
+                            <label for="remember">
+                                记住我
+                            </label>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-4">
+                        <button type="button" class="btn btn-primary btn-block" onclick="sub()">登录</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </form>
+
+            <!--<div class="social-auth-links text-center mt-2 mb-3">
+                <a href="javascript:layer.msg('暂未接入')" class="btn btn-block btn-success">
+                    <i class="fas fa-wechat mr-2"></i> 微信登录
+                </a>
+
+            </div>-->
+            <!-- /.social-auth-links -->
+
+            <p class="mb-1">
+                <a href="<{:url('forget_pwd')}>">忘记密码</a>
+            </p>
+           <!-- <p class="mb-0">
+                <a href="<{:url('reg')}>" class="text-center">注册账号</a>
+            </p>-->
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<{include file="public/footer"}>
+<script>
+    function sub() {
+        form_submit([],false,false,function (res) {
+            if (res.code==0){
+                location.href = res.data.url
+            }
+        },false,true)
+    }
+</script>
+</body>
+</html>

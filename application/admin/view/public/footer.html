@@ -1,0 +1,148 @@
+<!-- jQuery -->
+<script src="/static/adminlte/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="/static/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="/static/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/adminlte/js/adminlte.min.js"></script>
+<!--引入layer.js-->
+<script src="/static/adminlte/plugins/layer/layer.js"></script>
+<!--引入自定义的js函数-->
+<script src="/static/adminlte/plugins/bs/common.js"></script>
+<!--jquery.form-->
+<script src="/static/adminlte/plugins/bs/jquery.form.js"></script>
+<!--和php同样的函数-->
+<script src="/static/adminlte/plugins/bs/php.js"></script>
+<script>
+
+    //选中菜单的颜色
+    $(document).ready(function() {
+        $(".logout").on('click',function () {
+            layer.confirm('确定要退出后台吗？',{title:0},function () {
+                location.href = "<{:url('/admin/account/logout')}>"
+            })
+        })
+
+        /** add active class and stay opened when selected */
+        var url = window.location;
+        // for sidebar menu entirely but not cover treeview
+        $('ul.nav-sidebar a').filter(function() {
+            return this.href == url;
+        }).addClass('active');
+        // for treeview
+        $('ul.nav-treeview a').filter(function() {
+            return this.href == url;
+        }).parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
+        /*切换框架模式*/
+        if ($(".change-frame").length>0){
+            $(".change-frame").on('click',function () {
+               url = "<{:url('/admin/index/index')}>";
+               sendData(url,{from:'change-frame'},function (res) {
+                   if (res.code==0){
+                       if (res.data.type=='single_page'){
+                            self.location = res.data.url
+                       }else {
+                           self.location = res.data.url
+                       }
+                   }
+               },true,true)
+            });
+        }
+        if ($(".admin-msg-count-box").length>0){
+            setInterval(function () {
+                check_msg();
+            },30000)
+
+        }
+
+        check_msg();
+    })
+
+    function check_msg() {
+        sendData("<{:url('/admin/index/msg_count')}>",{},function (res) {
+            if (res.code==0){
+                var $box = $(".admin-msg-count-box")[0];
+                $($box).find('.total-count').text(res.data.total>0?res.data.total:'')
+
+                var $listListDiv = $($box).find('.msg-list');
+                $($listListDiv).empty();
+                if (res.data.total>0){
+                    for (var i=0;i<res.data.msg_list.length;i++){
+                        $($listListDiv).append('<div class="dropdown-divider"></div>\n' +
+                            '                <a href="<{:url(\'/admin/index/msg\')}>" class="dropdown-item">\n' +
+                            '                    <i class="fas '+res.data.msg_list[i].icon+' mr-2"></i> '+res.data.msg_list[i].total+' '+res.data.msg_list[i].msg_type_desc+'\n' +
+                            '                    <span class="float-right text-muted text-sm"></span>\n' +
+                            '                </a')
+                    }
+                }
+
+
+
+            }
+        },true,true)
+    }
+
+    function check_update(){
+        var c;
+        sendData("<{:url('/admin/index/check_update')}>",{},function (res) {
+            if (res.code==0){
+                if (res.data.status==0){
+                    c = '<div class="card card-default">\n' +
+                        '              <div class="card-body">\n' +
+                        '                <div class="alert alert-success alert-dismissible">\n' +
+
+                        '                  <h5><i class="icon fas fa-check"></i> 当前已是最新版 v'+res.data.v.old.sql_version+' </h5>\n' +
+                        '                  您已使用最新版，无需更新！\n' +
+                        '                </div>\n' +
+                        '              </div>\n' +
+
+                        '        <div class="card-footer" style="text-align: right"> ' +
+                        '<span class="btn btn-info"  onclick="layer.closeAll()">取消</span>' +
+                        '</div> </div>';
+                }else{
+                    c = '<div class="card card-default">\n' +
+                        '              <div class="card-body">\n' +
+                        '                <div class="alert alert-info alert-dismissible">\n' +
+                        '                  <h5><i class="icon fas fa-download"></i> 当前数据库需要更新！</h5>\n' +
+                        '                 <p class="version">当前版本v'+res.data.v.old.sql_version+'，最新版v'+res.data.v.new.sql+'</p>'+
+                        '                  请及时更新，为保证安全建议先备份数据库以免更新错误导致数据丢失问题，请在系统不忙碌的时候更新。\n' +
+                        '                </div>\n' +
+                        '              </div>\n' +
+
+                        '        <div class="card-footer" style="text-align: right"> ' +
+                        '<span class="btn btn-info"  onclick="layer.closeAll()">取消</span>' +
+                        '<span class="btn btn-success bs-left-30" onclick="app_update()">更新</span>' +
+                        '</div> </div>' +
+                        '<style>p.version {color: red;background: #ffeb3b;text-align: center;width: 180px;margin: 0 auto;}</style>'
+                }
+
+                return  layer.open({
+                    type: 1,
+                    title: '[BS_SHOP]-版本更新(目前仅针对数据库更新)',
+                    area: '55%',
+                    shadeClose: false,
+                    skin: 'layui-layer-dialog',
+                    closeBtn: 2,
+                    content: c
+                });
+
+            }
+        },true,true)
+
+
+
+    }
+
+    function app_update(){
+        layer.closeAll();
+        sendData("<{:url('/admin/index/start_update')}>",{},function (res) {
+            if (res.code !=0){
+                return layer.msg(res.msg,{icon:5})
+            }
+            location.reload();
+        });
+    }
+</script>

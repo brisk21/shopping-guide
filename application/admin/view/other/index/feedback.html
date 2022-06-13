@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <{include file="public/data_tables_css"}>
+    <!-- Ekko Lightbox -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/ekko-lightbox/ekko-lightbox.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- Navbar -->
+    <{include file="public/navbar"}>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">其他功能</a></li>
+                            <li class="breadcrumb-item active">留言反馈</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+
+
+                <div class="card">
+                    <div class="card-header">
+                        <form action="<{:url()}>">
+                            <div class="form-row ">
+
+                                <div class="col-auto">
+                                    <input name="keyword"  type="text" class="form-control " placeholder="UID或者账号" value="<{$Request.param.keyword?$Request.param.keyword:''}>">
+                                </div>
+
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary mb-2 "><i class="fas fa-search"></i></button>
+                                    <a  href="<{:url()}>"  class="btn btn-default mb-2 bs-left-30" title="重置"><i class="fas fa-history"></i></a>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        <table id="my_table" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>状态</th>
+                                <th>用户</th>
+                                <th>内容</th>
+                                <th>时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <{if !empty($data)}>
+                            <{foreach $data as $item}>
+                            <tr>
+                                <td ><{$item.category}></td>
+                                <td>
+                                    <{$item.statusDesc}>
+                                </td>
+                                <td>
+                                    <a href="<{:url('/admin/user.index/index',['keyword'=>$item.uid])}>"><{$item.user.account}></a>
+                                </td>
+                                <td>
+                                    <{if !empty($item.imgs)}>
+                                    <{foreach $item.imgs as $key=> $img}>
+
+                                    <a href="<{$img}>?text=12" data-toggle="lightbox" data-title=" <{$item.content}>" data-gallery="gallery">
+                                        <img src="<{$img}>" alt="图片" width="50px" class="img-fluid mb-2">
+                                    </a>
+                                    <{/foreach}>
+                                    <br>
+                                    <{/if}>
+                                    <{$item.content}>
+                                </td>
+
+                                <td>
+                                    <{$item.add_time|date="Y-m-d H:i:s",###}>
+                                </td>
+                                <td>
+
+                                    <{if $item.status==0}>
+                                    <span class="btn btn-success btn-xs" onclick="set_status(this)" data-id="<{$item.id}>"title="改成已处理">处理</span>
+                                    <{/if}>
+                                    <span class="btn btn-danger btn-xs del-data bs-left-10" onclick="del(this)" data-id="<{$item.id}>" title="删除"><i class="fas fa-trash"></i></span>
+                                </td>
+
+                            </tr>
+                            <{/foreach}>
+                            <{/if}>
+
+
+
+                            </tbody>
+                            <tfoot>
+
+
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <{$page?$page->render():''}>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
+
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<!-- DataTables  & Plugins -->
+<{include file="public/data_tables"}>
+
+<!-- Ekko Lightbox -->
+<script src="/static/adminlte/plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
+<script>
+    function del(obj){
+        var id = $(obj).data('id')
+
+        layer.confirm('确定要删除吗，不可恢复哦',{title:0},function () {
+            sendData("<{:url('feed_action')}>",{id:id,ac:'del'},function (res) {
+                if(res.code==0){
+                    $(obj).parent('td').parent('tr').remove();
+                }
+            })
+        })
+    }
+
+    function set_status(obj){
+        var id = $(obj).data('id')
+
+        layer.confirm('确定已处理相关问题吗？',{title:0},function () {
+            sendData("<{:url('feed_action')}>",{id:id,ac:'set_status'},function (res) {
+                if(res.code==0){
+                    location.replace(location.href)
+                }
+            })
+        })
+    }
+
+    $(function () {
+        $("#my_table").DataTable({
+            "ordering": false,//禁用排序
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            // "pageLength": 10,         //初始化显示几条数据
+            //serverSide: true, // use local process instead of server
+            // bFilter: true, // show top right search input box.
+            bPaginate: false,//是否开启分页
+            //iDisplayLength: 10, //默认显示的记录数
+            bInfo: false,//是否显示页脚信息，DataTables插件左下角显示记录数
+        }).buttons().container().appendTo('#my_table_wrapper .col-md-6:eq(0)');
+
+    });
+</script>
+
+<script>
+    $(function () {
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+            event.preventDefault();
+            $(this).ekkoLightbox({
+                alwaysShowClose: true
+            });
+        });
+
+        $('.filter-container').filterizr({gutterPixels: 3});
+        $('.btn[data-filter]').on('click', function() {
+            $('.btn[data-filter]').removeClass('active');
+            $(this).addClass('active');
+        });
+    })
+</script>
+</body>
+</html>

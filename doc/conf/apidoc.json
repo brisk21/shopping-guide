@@ -1,0 +1,15 @@
+{
+  "name": "接口文档",
+  "version": "1.0.0",
+  "description": "BS-SHOP-APIDOC",
+  "title": "bs_shop客户端接口文档",
+  "url" : "http://xxxxx.com",
+  "header": {
+    "title": "接口通用规则",
+    "filename": "../conf/header.md"
+  },
+  "footer": {
+    "title": "API 状态码说明",
+    "filename": "../conf/footer.md"
+  }
+}

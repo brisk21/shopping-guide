@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<!-- 内容区-->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title  ">菜单操作<{$data?' -【'.$data.name.'】':''}></h3>
+                    </div>
+
+                    <form method="post" action="<{:url('/admin/auth.index/action')}>" id="check-form">
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label for="fid">上级菜单</label>
+                                <select name="fid" id="fid" class="form-control">
+                                    <option data-url="" value="0">顶级</option>
+                                    <{if !empty($menus)}>
+                                    <{foreach $menus as $one}>
+                                    <option data-cname="<{$one.class_name}>" data-url="<{$one.url}>" <{if !empty($data['fid'])&&$data['fid']==$one.id}>selected<{/if}> value="<{$one.id}>"><{$one.name}></option>
+
+                                    <{if !empty($one.subcat)}>
+                                    <{foreach $one.subcat as $two}>
+                                    <option data-cname="<{$two.class_name}>" data-url="<{$two.url}>" <{if !empty($data['fid'])&&$data['fid']==$two.id}>selected<{/if}>   value ="<{$two.id}>" >|______<{$two.name}></option>
+                                    <{/foreach}>
+                                    <{/if}>
+
+                                    <{/foreach}>
+                                    <{/if}>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">菜单名称</label>
+                                <input name="title" value="<{$data?$data.name:''}>" type="text" class="form-control" id="title" placeholder="请输入名称">
+                                <input type="hidden" name="id" value="<{$data?$data.id:'0'}>">
+                            </div>
+                            <div class="form-group">
+                                <label for="type">类型</label>
+                                <select name="type" id="type" class="form-control">
+                                    <option  value="0">功能(右侧隐藏)</option>
+                                    <option <{if !empty($data['type'])&&$data['type']==1}>selected<{/if}> value="1">菜单(右侧显示)</option>
+                                </select>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="url">URL地址</label>
+                                <input type="text" name="url" id="url" value="<{$data?$data.url:''}>" class="form-control"/>
+                                <span class="bs-red">如：/admin/goods.index/index</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="sort">排序</label>
+                                <input type="number" name="sort" id="sort" value="<{$data?$data.sort:''}>" class="form-control"/>
+                                <span class="bs-red">越大越靠前</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="class_name">图片样式</label>
+                                <input type="text" name="class_name" value="<{$data?$data.class_name:'fa-cog'}>" id="class_name" class="form-control"/>
+                                <span class="bs-red"> <a target="_blank" href="https://fontawesome.com/">fontawesome字体图标</a>，如：fa-cog <i class="fas fa-cog"></i></span>
+                            </div>
+                            <div class="form-group" style="margin-top: 10px">
+
+                                <div class="row">
+
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-primary d-inline">
+                                                <{if !empty($data) && $data['is_new']=='1'}>
+                                                <input type="checkbox" id="is_new" name="is_new" checked >
+                                                <{else}>
+                                                <input type="checkbox" id="is_new" name="is_new" >
+                                                <{/if}>
+
+                                                <label for="is_new">
+                                                    显示“<span class="bs-red">new</span>”字样
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-primary d-inline">
+                                                <{if !empty($data) && $data['status']=='0'}>
+                                                <input type="checkbox" id="status" name="status" >
+                                                <{else}>
+                                                <input type="checkbox" id="status" name="status" checked>
+                                                <{/if}>
+
+                                                <label for="status">
+                                                    启用
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" onclick="form_submit()" class="btn btn-primary">提交保存</button>
+                                <a style="margin-left: 30px" target="_parent" href="<{:url('/admin/auth.index/menu')}>" class="btn btn-default">返回列表</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<{if empty($data)}>
+<script>
+    $(function () {
+        $("select[name='fid']").on('change',function () {
+            var obj = $("select[name='fid'] option:selected");
+            $("input[name='url']").val(obj.data('url'));
+            $("input[name='class_name']").val(obj.data('cname'));
+        });
+    })
+</script>
+<{/if}>
+
+
+</body>
+</html>

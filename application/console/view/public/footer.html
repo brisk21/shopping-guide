@@ -1,0 +1,80 @@
+<div class="footer-code"></div>
+<script src="/static/mall/lib/jquery-2.1.4.js"></script>
+<script src="/static/mall/lib/fastclick.js"></script>
+<!---->
+
+
+<script>
+    $(function() {
+        FastClick.attach(document.body);
+    });
+</script>
+
+<script src="/static/mall/js/jquery-weui.js"></script>
+<script src="/static/mall/com/com.js?t=1"></script>
+
+<script src="/static/adminlte/plugins/bs/php.js?t=12"></script>
+
+<script src="/static/com/js/msg.js"></script>
+
+<script src="/static/com/js/vconsole.min.js"></script>
+<!--<script>
+    const vConsole = new VConsole();
+</script>
+-->
+<script>
+
+    $(".wy-header-icon-back").on('click',function () {
+       history.back();
+    });
+
+    bs_request("<{:url('/console/account/config')}>",{},function (res){
+        if (res.code==0){
+            localStorage.setItem('config_shop',JSON.stringify(res.data));
+
+            if (res.data.shop_name){
+                var title = res.data.shop_name+'-'+$("title").text()
+                $('title').text(title)
+            }
+            if ($(".reg-div").length>0 && res.data.reg_type){
+                if (res.data.reg_type==-1){
+                    $(".reg-div").html('暂未开放注册')
+                }else if(res.data.reg_type==4){
+                    $(".reg-type1").remove();
+                    $(".reg-type4").show();
+                }else {
+                    $(".reg-type4").remove();
+                    $(".reg-type"+res.data.reg_type).show();
+                }
+            }
+            if (res.data.login_tmp_user && $(".login-tmp-account").length>0){
+                $(".login-tmp-account").show();
+            }
+            if (res.data.wx_login && $(".login-wx-account").length>0){
+                $(".login-wx-account").show();
+            }
+            if (res.data.shop_name && $(".shop_name").length>0){
+                $(".shop_name").html(res.data.shop_name);
+            }
+            if (res.data.footer_code){
+                $(".footer-code").html(res.data.footer_code);
+            }
+        }
+    });
+
+
+    if ($(".cart-num").length>0){
+        bs_request("<{:url('/mall/goods/my_cart_total')}>",{from:'home'},function (res){
+            if (res.code==0){
+                if (res.data.total>0){
+                    $(".cart-num").show().text(res.data.total)
+                }else{
+                    $(".cart-num").hide()
+                }
+            }else {
+                $(".cart-num").hide()
+            }
+        })
+    }
+</script>
+

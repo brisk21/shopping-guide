@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <style>
+        .cache-list{
+            list-style: none;
+        }
+        .cache-list>li{
+            padding: 10px;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">支付配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+                            <ul class="cache-list">
+                                <li>
+                                    模板缓存
+                                    <span class="btn btn-xs btn-warning bs-left-10" onclick="do_clean('del_cache_tpl')">清理缓存</span>
+                                    <br>
+                                    <span style="font-size: 12px;" class="bs-red">页面模板缓存，更新代码没有生效时可以清理试试。</span>
+                                </li>
+                                <hr>
+                                <li>
+                                    日志文件
+                                    <span class="btn btn-xs btn-warning bs-left-10" onclick="do_clean('del_cache_log')">清理缓存</span>
+                                    <br>
+                                    <span style="font-size: 12px;" class="bs-red">本地日志文件、内存日志等。</span>
+                                </li>
+                                <hr>
+                                <li>
+                                    数据缓存
+                                    <span class="btn btn-xs btn-warning bs-left-10"  onclick="do_clean('del_cache_data')">清理缓存</span>
+                                    <br>
+                                    <span style="font-size: 12px;" class="bs-red">清理数据缓存，如菜单、配置的查询缓存</span>
+                                </li>
+
+                                <hr>
+                                <li>扩展项：</li>
+                                <{if !empty($data)}>
+                                <{foreach $data as $name=> $item}>
+                                <li>
+                                    <{$name}>
+                                    <{if $item.status}>
+                                    <span class="btn btn-xs btn-success  bs-left-10">已启用</span>
+                                    <{if $item.name=='opcache'}>
+                                    <span title="php加速器，如果修改代码后没生效建议清理一下。" class="btn btn-xs btn-warning bs-left-10"  onclick="do_clean('del_cache_opcache')">清理缓存</span>
+                                    <br>
+                                    <span style="font-size: 12px;" class="bs-red">php加速器，如果修改代码后没生效建议清理一下。</span>
+                                    <{/if}>
+
+                                    <{else}>
+                                    <span class="btn btn-xs btn-outline-danger ">未开启</span>
+                                    <{/if}>
+                                </li>
+                                <hr>
+                                <{/foreach}>
+                                <{/if}>
+
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+    function do_clean(type) {
+        layer.confirm('确定清理吗？',{title:0},function () {
+            var url = type;
+            sendData(type,{},function (res) {
+
+            })
+        })
+    }
+</script>
+
+
+
+</body>
+</html>

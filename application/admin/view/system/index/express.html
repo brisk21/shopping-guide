@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <!-- daterange picker -->
+   <!-- <link rel="stylesheet" href="/static/adminlte/plugins/daterangepicker/daterangepicker.css">-->
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="/static/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/adminlte/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item active">物流配送相关</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">物流查询接口配置</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" style="display: block;">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <form method="post" action="<{:url('express_action',['from'=>'express'])}>" id="express">
+
+                                    <div class="form-group">
+                                        <label for="pt">接口平台</label>
+                                        <select name="pt" class="form-control" id="pt">
+                                            <option <{if !empty($data.pt)&&$data.pt=='aliyun'}>selected<{/if}>  value="aliyun">阿里云</option>
+
+                                        </select>
+                                        <span class="bs-red">目前仅支持阿里云，其它请联系微信：wei1-top</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="aliyun_appcode">阿里云appcode</label>
+                                        <input name="appcode" autocomplete="off" value="<{:isset($data.aliyun.appcode)?$data.aliyun.appcode:''}>" type="text" class="form-control" id="aliyun_appcode" placeholder="appcode">
+                                        <span class="bs-red">阿里云API市场某api的code，这里用物流接口的APICODE</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer" style="display: block;">
+                        <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                     form_submit([],'',false,false,'express')
+                                    })" class="btn btn-primary">提交保存</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <style>
+        .bg-info{
+            background-color: unset !important;
+        }
+        .info-box {
+            box-shadow:unset !important;
+            border-radius: 0.25rem;
+            background-color: #fff;
+            display: -ms-flexbox;
+            display: flex;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            padding: 0.5rem;
+            position: relative;
+            width: 100%;
+        }
+        .bs-app {
+            background: white;
+            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+            padding:10px;
+            margin-top: 5px;
+        }
+        .bs-app-btn{
+            text-align: right;
+        }
+        .bs-app-logo{
+            height: 70px;
+            width: 70px;
+        }
+        #uploadifive-upload_app>input[type="file"] {
+          width: 100px;
+        }
+        div#uploadifive-upload_app-queue {
+            display: inline;
+        }
+        #uploadifive-upload_app{
+            width: unset !important;
+            max-width: 100px;
+
+        }
+        div#uploadifive-upload_app {
+            line-height: unset !important;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row" style="margin-bottom: 10px">
+                    <div class="col-md-10">
+                        <span  id="upload_app" class="btn btn-success "> </span>
+
+                        <a href="<{:url('form')}>" class="btn btn-primary ">创建 <i class="fa fa-plus"></i></a>
+                    </div>
+                    <div class="col-md-2">
+                        <span data-toggle="modal" title="更新应用" data-target="#modal-help" href="">权限说明<i class="fa fa-question-circle"></i></span>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <{if !empty($data)}>
+                    <{foreach $data as $item}>
+                    <div class="col-md-3 col-sm-6 col-12 ">
+                        <div class="bs-app">
+                            <div class="info-box">
+                            <span class="info-box-icon bg-info">
+                                <img class="bs-app-logo" src="<{$item.info.logo}>" alt="">
+                            </span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text" title="<{$item.info.name}>"><{$item.info.name}></span>
+                                    <span class="info-box-number"><{$item.info.version}></span>
+                                </div>
+                                <span  onclick="viewDesc(this)"  data-html="true" data-title="<{$item.info.desc}>" class="btn btn-xs btn-primary" style="width: 22px;height: 22px"  ><i class="fa fa-question-circle"></i></span>
+                            </div>
+
+
+                            <div class="bs-app-btn">
+                                <{if !empty($item.info.has_front_page)}>
+                                <a target="_blank" href="<{:url('/plugin/'.$item.info.plugin_tag.'.index/index')}>" title="进入首页" class="btn btn-xs btn-primary "><i class="fas fa-home"></i></a>
+                                <{/if}>
+
+                                <{if !empty($item.info.need_config)}>
+                                <a href="<{:url('setting',['tag'=>$item.info.plugin_tag])}>" title="进入配置" class="btn btn-xs btn-default "><i class="fas fa-tools"></i></a>
+                                <{/if}>
+
+
+                                <{if $item.status==1}>
+                                <span title="已启用，点击禁用" class="btn btn-success btn-xs" onclick="set_status(this,'<{$item.info.plugin_tag}>','<{$item.status}>')"><i class="fa fa-check-circle"></i></span>
+                                <{else}>
+                                <span title="未启用，点击去启用" class="btn btn-warning btn-xs" onclick="set_status(this,'<{$item.info.plugin_tag}>','<{$item.status}>')"><i class="fa fa-check-circle"></i></span>
+                                <{/if}>
+
+                                
+                                
+                                <a href="<{:url('form',['tag'=>$item.info.plugin_tag])}>" title="修改信息" class="btn btn-xs btn-primary "><i class="fas fa-edit"></i></a>
+
+                                <span onclick="set_tag('<{$item.info.plugin_tag}>')" class="btn btn-xs btn-success" data-toggle="modal" title="更新应用" data-target="#modal-update"><i class="fa fa-cloud-upload-alt"></i></span>
+
+
+                                <a href="<{:url('pack',['tag'=>$item.info.plugin_tag])}>" title="下载" class="btn btn-xs btn-default "><i class="fas fa-download"></i></a>
+
+                                <span class="btn btn-xs btn-danger " title="完全卸载移除" onclick="remove('<{$item.info.plugin_tag}>','<{$item.info.name}>')"><i class="fas fa-trash"></i></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <{/foreach}>
+                    <{/if}>
+
+
+
+
+
+                </div>
+
+                <div class="bs-modal">
+                    <div class="modal fade" id="modal-update">
+                        <div class="modal-dialog">
+                            <form action="<{:url('update_app')}>" method="post" id="update_app">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">应用更新</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="app_pack">选择新包</label>
+                                            <input type="file" accept="application/zip" id="app_pack" name="app">
+                                            <input type="hidden" name="tag" value="">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                        <button type="button" onclick="start_update('update_app')" class="btn btn-primary">保存</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal-help">
+                        <div class="modal-dialog modal-dialog-scrollable  modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">应用操作环境说明</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table  class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>路径</th>
+                                            <th>权限</th>
+                                            <th>说明</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <{if !empty($envs)}>
+                                        <{foreach $envs as $env}>
+                                        <tr>
+                                            <td><{$env.path}></td>
+                                            <td class=" <{$env.status==0?'bs-red':'bs-green'}>">
+                                                <{$env.status==0?'X':'√'}>
+                                            </td>
+                                            <td ><{$env.desc}></td>
+                                        </tr>
+                                        <{/foreach}>
+                                        <{/if}>
+
+
+                                        </tbody>
+
+                                    </table>
+                                    <div>
+                                        环境必须都为可用（<span class="bs-green">√</span>），否则无法安装、更新、创建应用（<span class="bs-red">需要自己手动上传和修改代码</span>），如果权限不足可以给予755权限。应用下载请到应用开放平台：<a target="_blank" href="https://store.bs.shop.wei1.top">store.bs.shop.wei1.top</a>
+                                    </div>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                    <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-primary">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<!--<link rel="stylesheet" href="/static/adminlte/plugins/jq-uploadifive/uploadifive.css">-->
+<script src="/static/adminlte/plugins/jq-uploadifive/jquery.uploadifive.min.js"></script>
+<script>
+    var tag = null;
+    function remove(tag,name) {
+        layer.confirm('确定要完全卸载移除【'+name+'】应用吗,会清除保存的配置哦？',{title:'卸载【'+name+'】确认'},function () {
+            sendData("<{:url('remove')}>",{tag:tag},function (res) {
+                if (res.code==0){
+                    location.reload();
+                }
+            })
+        })
+    }
+    
+    function set_status(obj,tag,status){
+
+        layer.confirm('确定要【'+(status==0?'启用':'禁用')+'】吗？',{title:(status==0?'启用':'禁用')+'操作应用确认'},function () {
+            sendData("<{:url('set_status')}>",{tag:tag},function (res) {
+                if (res.code==0){
+                    location.reload();
+                }
+            })
+        })
+    }
+
+    function viewDesc(obj) {
+        layer.open({
+            title:0,
+            //area:['100%','500px'],
+            content:$(obj).data('title')
+        })
+    }
+
+    function set_tag(new_tag) {
+        tag = new_tag
+        $("input[name='tag']").val(tag)
+    }
+
+    function start_update(id){
+        layer.confirm('确定要更新吗，更新将替换原来的安装包哦？',{title:'更新确认'},function () {
+            form_submit([],"<{:url('manager')}>",false,function (res) {
+
+            },id)
+        })
+    }
+</script>
+<script>
+
+
+   var upload =  $("#upload_app").uploadifive({
+        method: 'POST', //POST或GET
+        height: 38, //高度
+        width: 100, //宽度
+        //swf           :  '/static/adminlte/plugins/uploadify3.2/uploadify.swf' , //指定swf文件
+        uploadScript: "<{:url('upload_app')}>", //后台处理的url
+
+        buttonText: '<i class="fa fa-upload"></i>上传',  //按钮显示的文字
+        buttonClass: 'btn btn-success',  //按钮显示的文字
+        fileType: '.zip', //上传文件的类型,默认为所有文件,多个类型使用;分割'*.gif; *.jpg; *.png'
+        fileTypeDesc: 'ZIP files', //可选择文件的描述,在浏览窗口底部的文件类型下拉菜单中显示的文本
+        formData: {'fileKey': 'app', 'from': 'bs_app'}, //发送给后台的其他参数通过formData指定
+        auto: true, //选择文件后自动上传
+        multi: false, //设置为true将允许多文件上传
+        //buttonClass: 'xttblog' , //上传按钮的样式
+        buttonImage: '', //按钮的图片路径
+        buttonCursor: 'hand', //鼠标指针悬停在按钮上的样子
+        fileObjName: 'app', //后台获取文件对象
+        fileSizeLimit: '2MB', //允许文件上传的最大大小.这个值可以是数字或字符串.如果它是一个字符串,它接受一个单位(B,KB,MB,GB)
+        //默认单位为KB。您可以将此值设置为0,无限制
+        removeCompleted: true, //默认为true上传完成后是否删除上传队列
+        removeTimeout: 1, //上传完成后,延迟3秒删除队列
+        requeueErrors: true, //默认为false,如果为true上传失败后将继续尝试再次上传
+
+        successTimeout: 30, //文件上传成功后服务端应返回成功标志，此项设置返回结果的超时时间
+        uploadLimit: 10, //最大上传文件数量，如果达到或超出此限制将会触发onUploadError事件
+        onInit: function () { //首次初始化Uploadify结束时触发
+            //console.log('11111')
+        },
+
+        onCancel :  function (file) {
+            //移除文件时触发
+        },
+        onCheck: function (file){
+
+        },
+        onUploadStart: function (file){ //当文件即将开始上传时立即触发
+
+        },
+        onUploadFile: function (file){
+
+        },
+        onUploadComplete: function (file, res){
+            res = JSON.parse(res)
+            if (res.code==0){
+                location.reload();
+            }else {
+                return layer.msg(res.msg,{icon:5,time:1000});
+            }
+
+            //当文件上传成功时触发
+            //file文件对象
+            //data服务端输出返回的信息
+            //response有输出时为true,如果无响应为false，如果返回的是false,当超过successTimeout设置的时间后假定为true
+
+        }
+    });
+</script>
+
+
+</body>
+</html>

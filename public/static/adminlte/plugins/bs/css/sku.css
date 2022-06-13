@@ -1,0 +1,8 @@
+.table td, .table th {
+    vertical-align: middle;
+}
+.title{padding: 10px;background-color: #eaeaea}
+
+.value-content{
+    padding: 10px;
+}

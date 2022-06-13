@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/extend.index/manager')}>">应用管理</a></li>
+                            <li class="breadcrumb-item active">应用操作</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+                            <div class="card-body">
+                                <form   id="check-form"  method="post" action="<{:url($action)}>">
+
+
+                                    <div class="form-group">
+                                        <label class=" ">应用分类：</label>
+                                        <select name="category" class="form-control">
+                                           <{foreach $category as $item}>
+                                            <option <{:isset($data.category_id)&&$data.category_id==$item.category_id?'selected':''}>   value="<{$item.category_id}>"><{$item.category_name}></option>
+                                            <{/foreach}>
+                                        </select>
+                                    </div>
+                                     <{if $action=='edit_app'}>
+                                    <div class="form-group">
+                                        <input type="hidden"   class="form-control" value="<{$data.plugin_tag}>"  maxlength="20" autocomplete="off"
+                                        placeholder="应用标识，如order_manager" name="tag">
+                                    </div>
+
+                                    <{else}>
+                                    <div class="form-group">
+                                        <label class=" ">应用标识：</label>
+                                        <input type="text" class="form-control" value="<{$data.plugin_tag}>"  maxlength="20" autocomplete="off"
+                                        placeholder="应用标识，如order_manager" name="tag">
+                                        <span class="bs-red">仅支持字母/大小写/下划线/数字（仅支持字母开头），不超过20字符</span>
+                                    </div>
+                                    <{/if}>
+
+
+                                    <div class="form-group">
+                                        <label class=" ">应用名称：</label>
+                                        <input type="text" class="form-control" value="<{$data.name}>" maxlength="20" autocomplete="off"
+                                               placeholder="<{$data.name}>" name="name">
+                                        <span class="bs-red">应用名称应在20字内</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">应用图标：</label>
+                                        <input  type="file" accept="image/png,image/jpeg,image/jpg" class="form-control"
+                                               autocomplete="off" placeholder="logo图标" name="logo">
+
+                                        <span class="bs-red">1:1/不大于200k,推荐70*70</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class=" ">作者：</label>
+                                        <input type="text" maxlength="20" class="form-control" autocomplete="off" value="<{$data.author}>" placeholder="<{$data.author}>" name="author">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class=" ">作者主页(http(s)://)：</label>
+                                        <input type="text" maxlength="255" class="form-control" autocomplete="off" value="<{$data.author_url}>" placeholder="<{$data.author_url}>" name="author_url">
+                                        <span class="bs-red">作者链接地址，博客等</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class=" ">联系方式：</label>
+                                        <input type="text"  value="<{$data.contact}>" class="form-control"
+                                               autocomplete="off" placeholder="<{$data.contact}>" name="contact">
+                                        <span class="bs-red">联系方式，如微信：wei1-top</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class=" ">版本号：</label>
+                                        <input type="text"  value="<{$data.version}>" class="form-control"
+                                               autocomplete="off" placeholder="<{$data.version}>" name="version">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class=" ">功能描述：</label>
+                                        <textarea  class="form-control" autocomplete="off" placeholder="应用描述,更新日志等" style="height: 150px" name="desc"><{$data.desc}></textarea>
+                                        <span class="bs-red">应用描述,更新日志等</span>
+                                    </div>
+
+                                    <div class=" form-group">
+                                        <label class=" ">是否有前端入口：</label>
+                                        <select name="has_front_page" class="form-control">
+                                            <option  <{:isset($data.has_front_page)&&$data.has_front_page=='1'?'selected':''}>   value="1">有</option>
+                                            <option <{:isset($data.has_front_page)&&$data.has_front_page=='0'?'selected':''}> value="0">无</option>
+                                        </select>
+                                        <span class="bs-red">有则显示入口图标，会进入Index类的index方法</span>
+                                    </div>
+
+                                    <div class=" form-group">
+                                        <label class=" ">是否需要配置：</label>
+                                        <select name="need_config" class="form-control">
+                                            <option  <{:isset($data.need_config)&&$data.need_config=='1'?'selected':''}>   value="1">是</option>
+                                            <option <{:isset($data.need_config)&&$data.need_config=='0'?'selected':''}> value="0">否</option>
+                                        </select>
+                                        <span class="bs-red">配置会保存在数据库，按Index类下面的config方法正常返回即可</span>
+                                    </div>
+
+                                    <div class=" form-group">
+                                        <label class=" ">开放安装：</label>
+                                        <select name="can_install" class="form-control">
+                                            <option  <{:isset($data.can_install)&&$data.can_install=='1'?'selected':''}>   value="1">是</option>
+                                            <option <{:isset($data.can_install)&&$data.can_install=='0'?'selected':''}> value="0">否</option>
+                                        </select>
+                                        <span class="bs-red">是否让用户安装，选择否则表示仅自己测试。</span>
+                                    </div>
+
+
+                                    <div class=" form-group">
+                                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                                            <a class="btn btn-success radius" onclick="save()">&nbsp;&nbsp;提交&nbsp;&nbsp;</a>
+                                            <a class="btn btn-default radius bs-left-20" target="_parent" href="<{:url('manager')}>">&nbsp;&nbsp;返回&nbsp;&nbsp;</a>
+                                        </div>
+                                    </div>
+                              </form>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+<script>
+    function save(){
+        form_submit([],"<{:url('manager')}>")
+    }
+</script>
+
+</body>
+</html>

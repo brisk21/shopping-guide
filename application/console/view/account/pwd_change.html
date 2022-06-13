@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<title>密码修改</title>
+<{include file="public/header" /}>
+</head>
+<body ontouchstart>
+<!--主体-->
+<header class="wy-header">
+  <div class="wy-header-icon-back"><span></span></div>
+  <div class="wy-header-title">密码修改</div>
+</header>
+<div class="weui-content">
+  <div class="weui-cells weui-cells_form wy-address-edit">
+
+    <div class="weui-cell weui-cell_vcode">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">动态码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" autocomplete="off" type="text" name="dcode" placeholder="请输入动态码"></div>
+      <div class="weui-cell__ft"><button class="weui-vcode-btn" >获取动态码</button></div>
+
+    </div>
+    <div class="weui-cell ">
+      <p style="color: red;display: none;" class="my-account"></p>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">新密码</label></div>
+      <div class="weui-cell__bd"><input autocomplete="off" class="weui-input" name="pwd" type="password"   placeholder="请输入新密码"></div>
+    </div>
+
+  </div>
+  <div class="weui-btn-area"><span id="sub" class="weui-btn weui-btn_primary">确认修改</span></div>
+</div>
+
+<{include file="public/footer" /}>
+<script>
+  var myAccount;
+  $(function () {
+    bs_request("<{:url('account_info')}>",{},function (res) {
+      if (res.code==0){
+        myAccount = res.data.user_info.account;
+        $(".my-account").show();
+        $(".my-account").text('接收动态码的账号：'+myAccount)
+      }
+
+    })
+
+
+
+    $("#vcode").on('click',function () {
+      resetVcode()
+    });
+    $(".weui-vcode-btn").on('click',function () {
+
+      if (!myAccount){
+        return   $.alert('此功能需要登录，仅支持邮箱或者手机号的用户','温馨提示')
+      }
+      $.showLoading('发送中....');
+      bs_request("<{:url('get_change_pwd_dcode')}>",{account:myAccount},function (res) {
+        $.hideLoading();
+        if (res.code != 0){
+          return   $.toast(res.msg,'cancel')
+        }
+        return   $.toast(res.msg,'success')
+      })
+
+    });
+
+    $("#sub").on('click',function () {
+      var dcode = $("input[name='dcode']").val();
+      var pwd1 = $("input[name='pwd']").val();
+
+      if (!dcode){
+        return   $.alert('请先获取动态码','温馨提示')
+      }
+      if (!pwd1){
+        return   $.alert('请设置新密码','温馨提示')
+      }
+
+
+      bs_request("<{:url('change_pwd')}>",{
+        pwd:pwd1,
+        dcode:dcode,
+      },function (res) {
+        if (res.code==0){
+          $.toast(res.msg,function () {
+            //跳转
+            location.href = res.data.url ;
+          })
+
+        }else {
+          $.alert(res.msg)
+        }
+
+      });
+
+    });
+  })
+  function resetVcode(){
+    $(".weui-vcode-img").attr('src',"<{:url('get_vcode')}>")
+  }
+
+
+</script>
+</body>
+</html>

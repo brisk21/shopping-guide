@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="/static/adminlte/plugins/summernote/summernote-bs4.min.css">
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>公告管理</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/system.article/index')}>">系统文章管理</a></li>
+                            <li class="breadcrumb-item active">文章详情</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">公告操作</h3>
+                            </div>
+
+                            <form method="post" action="<{:url('action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="title">标题</label>
+                                        <input name="title" value="<{$data?$data.title:''}>" type="text" class="form-control" id="title" placeholder="请输入标题">
+                                        <input type="hidden" name="id" value="<{$data?$data.id:'0'}>">
+                                    </div>
+                                    <div class="form-group" style="margin-top: 10px">
+                                        <div class="row">
+
+                                            <div class="col-md-6 col-sm-6">
+                                                <div class="form-group clearfix">
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="checkbox" id="status" name="status" <{if !empty($data['status'])}>checked<{/if}>>
+                                                        <label for="status">
+                                                            发布展示
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="textarea">详情</label>
+                                        <textarea id="textarea" name="content" class="form-control"  ><{$data?$data.content:''}></textarea>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="card-footer">
+                                    <button type="button" onclick="form_submit()" class="btn btn-primary">提交保存</button>
+                                    <a  href="<{:url('index')}>" class="btn btn-default bs-left-30">返回列表</a>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script src="/static/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
+
+<script>
+
+    //上传图片
+    function uploadFile($summernote, file) {
+        var data = new FormData();
+        data.append('fileKey','bs_shop')
+        data.append('from','sys_article')
+        data.append("bs_shop", file);
+        $.ajax({
+            url:"<{:url('/admin/upload/image')}>",
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (res) {
+                res = JSON.parse(res)
+                if (res.code==0){
+
+                    $summernote.summernote('insertImage', res.data.url, function ($image) {
+                        $image.attr('src', res.data.url);
+                    });
+                    //$summernote.summernote('insertImage', res.data.url,'img');
+                }
+
+            }
+        });
+    }
+    //删除图片
+    function removeFile(target){
+        var imgsrc = target[0].currentSrc;
+        console.log(imgsrc)
+        $.post('page/remove_img.php',{
+            imgSrc:imgsrc
+        },function(data){
+            console.log(data);
+        })
+
+    }
+    $(document).ready(function () {
+        var $summernote = $('#textarea').summernote({
+            height:300,                 // set editor height
+            minHeight:null,             // set minimum height of editor
+            maxHeight:null,             // set maximum height of editor
+            focus:true      ,            //
+            callbacks: {
+                //上传时调用
+                onImageUpload: function (files) {
+                    uploadFile($summernote, files[0]);
+                },
+                //删除时调用
+                onMediaDelete: function (target) {
+                    removeFile(target);
+                }
+            }
+
+        });
+
+    })
+
+</script>
+
+</body>
+</html>

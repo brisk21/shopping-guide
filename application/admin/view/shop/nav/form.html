@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <link rel="stylesheet" href="/static/adminlte/plugins/jq-uploadifive/uploadifive.css">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/jedate-6.5.0/skin/jedate.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/shop.nav/index')}>">商城导航列表</a></li>
+                            <li class="breadcrumb-item active">导航操作</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title  ">导航操作<{$data?' -【'.$data.title.'】':''}></h3>
+                            </div>
+
+                            <form method="post" action="<{:url('nav_action')}>" id="check-form">
+                                <div class="card-body">
+
+                                    <div class="form-group">
+                                        <label for="title">导航名称</label>
+                                        <input name="title" value="<{$data?$data.title:''}>" type="text" class="form-control" id="title" placeholder="请输入名称">
+                                        <input type="hidden" name="id" value="<{$data?$data.id:'0'}>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="url">跳转url</label>
+                                        <input name="url" value="<{$data?$data.url:''}>" type="text" class="form-control" id="url" placeholder="请输入url">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stime">开始时间</label>
+                                        <input type="text" name="stime" value="<{$data?$data.s_time:''}>" class="form-control jeinput" autocomplete="off" id="stime" placeholder="YYYY-MM-DD hh:mm:ss">
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="etime">结束时间</label>
+                                        <input type="text" name="etime" value="<{$data?$data.e_time:''}>" class="form-control jeinput" autocomplete="off" id="etime" placeholder="YYYY-MM-DD hh:mm:ss">
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="img">封面图片<span id="file_upload"   type="file" ></span></label>
+                                        <input type="text" name="img" value="<{$data?$data.img:''}>" placeholder="可以直接输入图片src链接" id="img" class="form-control"/>
+                                        <div id="queue"></div>
+
+                                        <div class="show-thumb bs-top-10">
+                                            <img src="<{$data?$data.img:''}>" width="50px" style="max-height: 100px" alt="">
+                                        </div>
+                                        <span class="bs-red">50*50</span>
+                                    </div>
+
+                                    <div class="form-group" style="margin-top: 10px">
+
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6">
+                                                <div class="form-group clearfix">
+                                                    <div class="icheck-primary d-inline">
+                                                        <{if empty($data) || $data['status']=='0'}>
+                                                        <input type="checkbox" id="status" name="status" checked>
+                                                        <{else}>
+                                                        <input type="checkbox" id="status" name="status" >
+                                                        <{/if}>
+
+                                                        <label for="status">
+                                                            启用
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="button" onclick="form_submit()" class="btn btn-primary">提交保存</button>
+                                        <a  target="_parent" href="<{:url('index')}>" class="btn btn-default bs-left-30">返回列表</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script src="/static/adminlte/plugins/jq-uploadifive/jquery.uploadifive.min.js"></script>
+<script src="/static/adminlte/plugins/jedate-6.5.0/dist/jedate.min.js"></script>
+<script>
+    jeDate("#stime",{
+        festival:true,
+        minDate:"1900-01-01",              //最小日期
+        maxDate:"2099-12-31",              //最大日期
+        method:{
+            choose:function (params) {
+
+            }
+        },
+        format: "YYYY-MM-DD hh:mm:ss"
+    });
+    jeDate("#etime",{
+        festival:true,
+        minDate:"1900-01-01",              //最小日期
+        maxDate:"2099-12-31",              //最大日期
+        method:{
+            choose:function (params) {
+
+            }
+        },
+        format: "YYYY-MM-DD hh:mm:ss"
+    });
+    $('#file_upload').uploadifive({
+        method: 'POST' , //POST或GET
+        height        : 30, //高度
+        //swf           :  '/static/adminlte/plugins/uploadify3.2/uploadify.swf' , //指定swf文件
+        uploadScript      :  "<{:url('/admin/upload/image')}>" , //后台处理的url
+        width         : 120, //宽度
+        buttonText:  '上传图片' ,  //按钮显示的文字
+        fileType:   '.jpg,.png,.jpeg' , //上传文件的类型,默认为所有文件,多个类型使用,分割'.gif,.jpg,.png'
+        fileTypeDesc:  'Image Files' , //可选择文件的描述,在浏览窗口底部的文件类型下拉菜单中显示的文本
+        formData: { 'fileKey' : 'bs_shop' , 'from' :'bsnavs'}, //发送给后台的其他参数通过formData指定
+        auto:  true , //选择文件后自动上传
+        multi:  false , //设置为true将允许多文件上传
+        //buttonClass: 'xttblog' , //上传按钮的样式
+        buttonImage: '' , //按钮的图片路径
+        buttonCursor: 'hand' , //鼠标指针悬停在按钮上的样子
+        fileObjName: 'bs_shop' , //后台获取文件对象
+        fileSizeLimit: '2MB' , //允许文件上传的最大大小.这个值可以是数字或字符串.如果它是一个字符串,它接受一个单位(B,KB,MB,GB)
+        //默认单位为KB。您可以将此值设置为0,无限制
+        removeCompleted: true , //默认为true上传完成后是否删除上传队列
+        removeTimeout:2, //上传完成后,延迟3秒删除队列
+        requeueErrors: true , //默认为false,如果为true上传失败后将继续尝试再次上传
+        successTimeout:30, //文件上传成功后服务端应返回成功标志，此项设置返回结果的超时时间
+        uploadLimit:10, //最大上传文件数量，如果达到或超出此限制将会触发onUploadError事件
+        onInit: function (){ //首次初始化Uploadify结束时触发
+            //console.log('11111')
+        },
+
+        onCancel :  function (file) {
+            //移除文件时触发
+        },
+        onCheck: function (file){
+
+        },
+        onUploadStart: function (file){ //当文件即将开始上传时立即触发
+
+        },
+        onUploadFile: function (file){
+
+        },
+        onUploadComplete: function (file, res){
+            res = JSON.parse(res)
+            //console.log('res',res)
+            if (res.code==0){
+                $(".show-thumb").children('img').attr('src',res.data.url)
+                $("#img").val(res.data.url)
+            }else {
+                return layer.msg(res.msg,{icon:5,time:1000});
+            }
+
+            //当文件上传成功时触发
+            //file文件对象
+            //data服务端输出返回的信息
+            //response有输出时为true,如果无响应为false，如果返回的是false,当超过successTimeout设置的时间后假定为true
+
+        }
+    });
+</script>
+
+</body>
+</html>

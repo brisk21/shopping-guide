@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>EasyUploader example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 10px;
+        }
+
+        body {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .example-frame {
+            padding: 10px 0;
+            box-sizing: border-box;
+        }
+
+        .title {
+            background: #ddd;
+            line-height: 2;
+            margin-bottom: 10px;
+            font-size: 1.6rem;
+        }
+
+        .info {
+            line-height: 2;
+            margin-bottom: 10px;
+            font-size: 1.6rem;
+        }
+
+        #btn1, #btn2 {
+            display: inline-block;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            border: 0;
+            background: #aaa;
+            color: #fff;
+            cursor: pointer;
+            outline: none;
+            font-size: 1.4rem;
+        }
+
+        #upload_btn2 {
+            display: inline-block;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            border: 0;
+            background: rgb(29, 153, 10);
+            color: #fff;
+            cursor: pointer;
+            outline: none;
+            font-size: 1.4rem;
+        }
+
+        #drop_area {
+            width: 40vw;
+            height: 20vw;
+            line-height: 20vw;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            text-align: center;
+            color: #ddd;
+            user-select: none;
+            font-size: 1.2rem;
+            font-weight: 100;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #file2 {
+            cursor: pointer;
+            outline: none;
+        }
+
+        #file_frame {
+            width: 100%;
+            margin: 20px 0;
+            overflow: hidden;
+            font-size: 1.6rem;
+        }
+
+        hr {
+            margin: 5px 0;
+        }
+
+        img {
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .clip-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 90000;
+            display: none;
+        }
+        .clip-layer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(27, 31, 35, .5);
+        }
+        .clip-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 500px;
+            background: #fff;
+            border-radius: 2px;
+            overflow: auto;
+        }
+        .clip-wrapper-header {
+            background: #f6f8fa;
+            padding: 16px;
+            border-bottom: 1px solid #d1d5da;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+        }
+        .clip-wrapper-header h3 {
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .clip-wrapper-body {
+            position: relative;
+            width: 100%;
+            height: 80vw;
+            max-height: 60vh;
+            overflow: auto;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .clip-wrapper-body img {
+            width: 100%;
+        }
+        .clip-wrapper-body .clip-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, .3);
+        }
+        .clip-wrapper-footer {
+            border-top: 1px solid #e1e4e8;
+            padding: 16px;
+        }
+        .clip-wrapper-footer button {
+            display: block;
+            width: 100%;
+            font-size: 14px;
+            line-height: 2.5;
+            text-align: center;
+            background-color: #28a745;
+            cursor: pointer;
+            border: 1px solid rgba(27, 31, 35, .2);
+            color: #fff;
+            box-sizing: border-box;
+            border-radius: .25em;
+            opacity: 1;
+            outline: none;
+        }
+        .clip-wrapper-footer button:hover {
+            opacity: 0.95;
+        }
+        .clip-wrapper-footer button:active {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+<div class="example-frame">
+    <div class="title">library info</div>
+    <div class="info"></div>
+</div>
+<div class="example-frame">
+    <div class="title">bind element node</div>
+    <button id="btn1">upload_pic</button>
+</div>
+<div class="example-frame">
+    <div class="title">choose file and click upload button</div>
+    <button id="btn2">＋</button>
+    <button id="upload_btn2">upload_btn</button>
+</div>
+<div class="example-frame">
+    <div class="title">bind input(type="file") element node</div>
+    <input type="file" name="file" id="easyuploader_file">
+</div>
+<div class="example-frame">
+    <div class="title">drag upload</div>
+    <div id="drop_area">drag the file in here</div>
+</div>
+<div id="file_frame">
+    <h3>upload result file</h3>
+    <hr>
+</div>
+<div class="clip-frame">
+    <div class="clip-layer">
+        <div class="clip-wrapper">
+            <div class="clip-wrapper-header">
+                <h3>Please clip picture</h3>
+
+            </div>
+            <div class="clip-wrapper-body">
+                <img src="" alt="">
+                <div class="clip-container">
+                    <div class="clip-box">
+
+                    </div>
+                </div>
+            </div>
+            <div class="clip-wrapper-footer">
+                <button>save and upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="easyuploader.min.js"></script>
+<script>
+    var fileFrameObj = document.querySelector('#file_frame'),
+        img = document.createElement('img'),
+        div = document.createElement('div'),
+        uploadBtn2 = document.querySelector('#upload_btn2'),
+        infoObj = document.querySelector('.info');
+
+    var eu1 = new EasyUploader({
+        'el': '#btn1',
+        'accept': 'image/*',
+
+        'url': './upload.php',
+        'autoUpload': true,
+        'allowFileExt': ['jpg', 'png'],
+        'language': 'en',
+        'compress': true,
+        'resize': {
+            'maxWidth': 1000,
+            'maxHeight': 1000
+        },
+        'compressQuality': 0.9,
+        'maxFileSize': '5 * 1024 * 1024',
+        onUploadProgress: function(e) {
+            console.log('the progress:' + ((e.loaded / e.total) * 100).toFixed(2) + '%');
+        },
+        onUploadStart: function(e) {
+            console.log('the file will upload');
+        },
+        onUploadComplete: function(data) {
+            alert(data.msg);
+            if (data.code == 1) {
+                fileData = data.data;
+                if (fileData.file_type.indexOf('image/') >= 0) {
+                    img.src = fileData.path;
+                    fileFrameObj.appendChild(img);
+                } else {
+                    div.innerHTML = 'the file path：' + fileData.path;
+                    fileFrameObj.appendChild(div);
+                }
+            }
+        },
+        onUploadError: function(statusCode) {
+            console.log(statusCode);
+        }
+    });
+
+    var eu2 = new EasyUploader({
+        'el': '#btn2',
+
+        'url': './upload.php',
+        'autoUpload': false,
+        'language': 'en',
+        'compress': true,
+        'resize': {
+            'maxWidth': 1000,
+            'maxHeight': 1000
+        },
+        'compressQuality': 0.9,
+        'maxFileSize': '2M',
+        onUploadProgress: function(e) {
+            console.log('the progress:' + ((e.loaded / e.total) * 100).toFixed(2) + '%');
+        },
+        onUploadStart: function(e) {
+            console.log('the file will upload');
+        },
+        onUploadComplete: function(data) {
+            alert(data.msg);
+            if (data.code == 1) {
+                fileData = data.data;
+                if (fileData.file_type.indexOf('image/') >= 0) {
+                    img.src = fileData.path;
+                    fileFrameObj.appendChild(img);
+                } else {
+                    div.innerHTML = 'the file path:' + fileData.path;
+                    fileFrameObj.appendChild(div);
+                }
+            }
+        },
+        onUploadError: function(statusCode) {
+            console.log(statusCode);
+        }
+    });
+
+    uploadBtn2.addEventListener('click', function() {
+        eu2.upload();
+    });
+
+    var eu3 = new EasyUploader({
+        'file': '#easyuploader_file',
+
+        'url': './upload.php',
+        'autoUpload': true,
+        'language': 'en',
+        'compress': true,
+        'resize': {
+            'maxWidth': 1000,
+            'maxHeight': 1000
+        },
+        'compressQuality': 0.9,
+        'maxFileSize': '10M',
+        onUploadProgress: function (e) {
+            console.log('the progress:' + ((e.loaded / e.total) * 100).toFixed(2) + '%');
+        },
+        onUploadStart: function (e) {
+            console.log('the file will upload');
+        },
+        onUploadComplete: function (data) {
+            alert(data.msg);
+            if (data.code == 1) {
+                fileData = data.data;
+                if (fileData.file_type.indexOf('image/') >= 0) {
+                    img.src = fileData.path;
+                    fileFrameObj.appendChild(img);
+                } else {
+                    div.innerHTML = 'the file path:' + fileData.path;
+                    fileFrameObj.appendChild(div);
+                }
+            }
+        },
+        onUploadError: function (statusCode) {
+            console.log(statusCode);
+        }
+    });
+
+    var eu4 = new EasyUploader({
+        'el': '#drop_area',
+
+        'url': './upload.php',
+        'autoUpload': true,
+        'language': 'en',
+        'compress': true,
+        'resize': {
+            'maxWidth': 1000,
+            'maxHeight': 1000
+        },
+        'compressQuality': 0.9,
+        'maxFileSize': '2 * 1024 KB',
+        'allowDrag': true,
+        onDrop: function(e) {
+            console.log('drop');
+        },
+        onDragOver: function(e) {
+            console.log('dragover');
+        },
+        onDragEnter: function(e) {
+            console.log('dragenter');
+        },
+        onDragLeave: function(e) {
+            console.log('dragleave');
+        },
+        onUploadProgress: function (e) {
+            console.log('the progress:' + ((e.loaded / e.total) * 100).toFixed(2) + '%');
+        },
+        onUploadStart: function (e) {
+            console.log('the file will upload');
+        },
+        onUploadComplete: function (data) {
+            alert(data.msg);
+            if (data.code == 1) {
+                fileData = data.data;
+                if (fileData.file_type.indexOf('image/') >= 0) {
+                    img.src = fileData.path;
+                    fileFrameObj.appendChild(img);
+                } else {
+                    div.innerHTML = 'the file path:' + fileData.path;
+                    fileFrameObj.appendChild(div);
+                }
+            }
+        },
+        onUploadError: function (statusCode) {
+            console.log(statusCode);
+        }
+    });
+
+    infoObj.innerHTML = 'name: ' + eu1.classPrefix + '<br>version: v' + eu1.version + '<br>github: <a href="https://github.com/hillpy/EasyUploader" target="_blank">https://github.com/hillpy/EasyUploader</a>';
+</script>
+</body>
+</html>

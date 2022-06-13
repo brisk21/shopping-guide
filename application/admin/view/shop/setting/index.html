@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title><{:isset($webConf.bs_title)?$webConf.bs_title:'BS后台管理'}></title>
+    <{include file="public/header"}>
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/static/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <!-- 顶部导航 -->
+    <{include file="public/navbar"}>
+    <!--左侧菜单-->
+    <{include file="public/sidebar"}>
+
+    <div class="content-wrapper">
+        <!-- 面包屑导航 -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="<{:url('/admin/index/index')}>">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">商城设置</a></li>
+                            <li class="breadcrumb-item active">功能配置</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 内容区-->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-12">
+
+                        <div class="card card-primary">
+
+                            <form method="post" action="<{:url('/admin/shop.setting/config_action')}>" id="check-form">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="shop_name">商城名称</label>
+                                        <input name="shop_name" autocomplete="off" value="<{$data?$data.shop_name:'bs-shop购物商城'}>" type="text" class="form-control" id="shop_name" placeholder="商城名称">
+                                        <span class="bs-red">商城名称</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shop_type">商城类型</label>
+                                        <select name="shop_type" id="shop_type" class="form-control">
+                                            <option value="0">销售</option>
+                                            <option <{if !empty($data.shop_type)&&$data.shop_type=='1'}>selected<{/if}> value="1">展示</option>
+                                            <option <{if !empty($data.shop_type)&&$data.shop_type=='2'}>selected<{/if}>  value="2">自提</option>
+                                            <option <{if !empty($data.shop_type)&&$data.shop_type=='3'}>selected<{/if}>  value="3">虚拟销售</option>
+                                        </select>
+                                        <span class="bs-red"><b class="bs-blue">销售</b>：商品->付款->发货->收货->完成；<br>
+                                            <b class="bs-blue">展示</b>：商品->联系商家->完成；<br>
+                                            <b class="bs-blue">自提</b>：商品->付款->到店提货->完成；<br>
+                                            <b class="bs-blue">虚拟</b>：商品->支付->自动发货->完成。</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shop_tel">联系电话</label>
+                                        <input name="shop_tel" autocomplete="off" value="<{:isset($data.shop_tel)?$data.shop_tel:''}>" type="text" class="form-control" id="shop_tel" placeholder="联系电话">
+                                        <span class="bs-red">客户可以快速拨打电话联系卖家。</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shop_address_tihuo">提货地址</label>
+                                        <textarea name="shop_address_tihuo" autocomplete="off"  type="text" class="form-control" id="shop_address_tihuo" placeholder="如：广东省-广州市-白云区-BS商城开发部666号"><{:isset($data.shop_address_tihuo)?$data.shop_address_tihuo:''}></textarea>
+                                        <span class="bs-red">提货类型必须填写提货地址，方便客户到指定地点提取货物。</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="gift_order_point">订单支付积分奖励</label>
+                                        <input name="gift_order_point" autocomplete="off" value="<{:isset($data.gift_order_point)?$data.gift_order_point:'0'}>" type="number" class="form-control" id="gift_order_point" placeholder="订单支付后赠送的积分">
+                                        <span class="bs-red">订单支付后赠送的积分=付款金额取整x这里的数值；0代表不赠送。注意这是支付完成立即赠送的积分。如设置2，是实付金额为10.05元时，到账20个积分。</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="auto_receive_order_time">订单自动确认收货(天)</label>
+                                        <input name="auto_receive_order_time" autocomplete="off" value="<{:isset($data.auto_receive_order_time)?$data.auto_receive_order_time:'15'}>" type="number" class="form-control" id="auto_receive_order_time" placeholder="订单发货后x天自动确认收货">
+                                        <span class="bs-red">订单发货后用户没有确认收货的通过定时任务自动确认收货，不设置默认15天（从发货时间开始计算）。</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label  >支付方式</label>
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-success d-inline ">
+                                                <input type="checkbox" name="pay_wechat" id="pay_wechat" <{if !empty($data.pay_wechat)}>checked<{/if}>  >
+                                                <label for="pay_wechat">
+                                                    微信
+                                                </label>
+                                            </div>
+                                            <!--<div class="icheck-primary d-inline bs-left-10">
+                                                <input type="checkbox" name="pay_alipay" id="pay_alipay" <{if !empty($data.pay_alipay)}>checked<{/if}>>
+                                                <label for="pay_alipay">
+                                                    支付宝
+                                                </label>
+                                            </div>-->
+                                            <div class="icheck-pink d-inline bs-left-10">
+                                                <input type="checkbox"  name="pay_credit"  id="pay_credit" <{if !empty($data.pay_credit) }>checked<{/if}> >
+                                                <label for="pay_credit">
+                                                    余额
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="reg_type">注册方式</label>
+                                        <select name="reg_type" class="form-control" id="reg_type">
+                                            <option <{if !empty($data.reg_type)&&$data.reg_type=='1'}>selected<{/if}>  value="1">仅手机号</option>
+                                            <option <{if !empty($data.reg_type)&&$data.reg_type=='2'}>selected<{/if}>  value="2">仅邮箱</option>
+                                            <option <{if !empty($data.reg_type)&&$data.reg_type=='3'}>selected<{/if}>  value="3">邮箱和手机号</option>
+                                            <option <{if !empty($data.reg_type)&&$data.reg_type=='4'}>selected<{/if}>  value="4">任意字符串</option>
+                                            <option <{if !empty($data.reg_type)&&$data.reg_type=='-1'}>selected<{/if}>  value="-1">不开放注册</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg_gift_credit">注册赠送余额(元)</label>
+                                        <input name="reg_gift_credit" autocomplete="off" value="<{:isset($data.reg_gift_credit)?$data.reg_gift_credit:'0'}>" type="number" min="0" class="form-control" id="reg_gift_credit" placeholder="注册赠送余额">
+                                        <span class="bs-red">注册赠送的余额和用户自己充值的余额一样，都可以用于消费，比如测试阶段可以设置一定数量进行测试支付。</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="login_tmp_user">是否开启游客登录</label>
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-success d-block ">
+                                                <input type="checkbox" name="login_tmp_user" id="login_tmp_user" <{if !empty($data.login_tmp_user)}>checked<{/if}>  >
+                                                <label for="login_tmp_user">
+                                                    启用
+                                                </label>
+                                            </div>
+                                            <span class="bs-red">启用游客登录后用户可以临时创建一个账号，账号、密码都是随机，享有和注册一样的权限，但不支持二次登录，可以后台修改登录信息。</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="wx_login">是否支持微信登录</label>
+                                        <div class="form-group clearfix">
+                                            <div class="icheck-success d-block ">
+                                                <input type="checkbox" name="wx_login" id="wx_login" <{if !empty($data.wx_login)}>checked<{/if}>  >
+                                                <label for="wx_login">
+                                                    支持
+                                                </label>
+                                            </div>
+                                            <span class="bs-red">开启后用微信自动创建账号，也可以自己绑定后进行微信登录，在设置中心支持解绑微信。</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="footer_code">站点统计代码</label>
+                                        <textarea type="text"  name="footer_code" id="footer_code" class="form-control"><{:isset($data.footer_code)?$data.footer_code:''}></textarea>
+                                        <span class="bs-red">站点统计、推送代码</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" onclick="layer.confirm('确定提交保存吗',{title:0},function() {
+                                      form_submit()
+                                    })" class="btn btn-primary">提交保存</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <{include file="public/copyright"}>
+
+
+</div>
+<!-- ./wrapper -->
+
+<{include file="public/footer"}>
+
+<script>
+function test() {
+    var v = $("input[name='test']").val();
+    sendData("<{:url('email_test')}>",{email:v},function (res) {
+        layer.msg(res.msg,{icon:res.code==0?6:5},function () {
+
+        })
+    },true)
+}
+</script>
+
+</body>
+</html>

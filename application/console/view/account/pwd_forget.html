@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<title>密码修改</title>
+<{include file="public/header" /}>
+</head>
+<body ontouchstart>
+<!--主体-->
+<header class="wy-header">
+  <div class="wy-header-icon-back"><span></span></div>
+  <div class="wy-header-title">找回密码</div>
+</header>
+<div class="weui-content">
+  <div class="weui-cells weui-cells_form wy-address-edit">
+    <div class="weui-cell weui-cell_vcode">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">验证码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" name="vcode" type="text" placeholder="请输入验证码"></div>
+      <div class="weui-cell__ft" id="vcode"><img class="weui-vcode-img" src="<{:url('get_vcode')}>"></div>
+
+    </div>
+    <div class="weui-cell weui-cell_vcode">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">账号</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" type="text" name="account" placeholder="请输入手机号或者邮箱"></div>
+      <div class="weui-cell__ft"><button class="weui-vcode-btn">获取动态码</button></div>
+    </div>
+    <div class="weui-cell ">
+      <p style="color: red; "  >请填写您的登录账号然后获取动态码</p>
+    </div>
+
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">动态码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" name="dcode" type="number"   placeholder="请填写动态码"></div>
+
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label wy-lab">新密码</label></div>
+      <div class="weui-cell__bd"><input class="weui-input" name="pwd" type="password"   placeholder="请输入新密码"></div>
+  </div>
+  <div class="weui-btn-area"><a href="javascript:submit();" class="weui-btn weui-btn_primary">确认修改</a></div>
+</div>
+
+<{include file="public/footer" /}>
+<script>
+  $(function () {
+    $("#vcode").on('click',function () {
+      resetVcode()
+    });
+    $(".weui-vcode-btn").on('click',function () {
+      var account = $("input[name='account']").val();
+      var vcode = $("input[name='vcode']").val();
+      if (!vcode){
+        return   $.alert('请输入图形验证码','温馨提示')
+      }
+      if (!account){
+        return   $.alert('请填写登录账户','温馨提示')
+      }
+      $.showLoading('发送中....');
+      bs_request("<{:url('get_forget_pwd_dcode')}>",{account:account,vcode:vcode},function (res) {
+        $.hideLoading();
+        resetVcode();
+        if (res.code != 0){
+          return   $.toast(res.msg,'cancel')
+        }
+        return   $.toast(res.msg,'success')
+      })
+
+    })
+  })
+  function resetVcode(){
+    $(".weui-vcode-img").attr('src',"<{:url('get_vcode')}>")
+  }
+
+  function submit(){
+    var account = $("input[name='account']").val();
+    var dcode = $("input[name='dcode']").val();
+    var pwd = $("input[name='pwd']").val();
+
+    if (!account){
+      return   $.alert('账号未设置','温馨提示')
+    }
+    if (!dcode){
+      return   $.alert('请输入动态码','温馨提示')
+    }
+    if (!pwd){
+      return   $.alert('密码不合法或未设置','温馨提示')
+    }
+
+    bs_request("<{:url('reset_pwd')}>",{
+      account:account,
+      pwd:pwd,
+      dcode:dcode,
+    },function (res) {
+      resetVcode();
+      if (!res){
+        return $.alert('网络超时');
+      }
+
+      if (res.code==0){
+        $.toast(res.msg,function () {
+          //跳转登录页面
+          location.href = res.data.url
+        })
+
+      }else {
+        $.alert(res.msg)
+      }
+    });
+
+
+  }
+</script>
+</body>
+</html>
