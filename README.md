@@ -3,4 +3,6 @@
 
 #### 在线体验（H5版）：http://h5.dg.wei1.top/
 
+- 后台管理的vue版本 https://gitee.com/brisklan/daogou-vue-manger
+
 ###### 欢迎加群交流 微信：wei1-top
