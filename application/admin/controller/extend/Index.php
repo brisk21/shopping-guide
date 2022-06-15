@@ -8,7 +8,7 @@ use app\admin\controller\com\Admin;
 use app\common\controller\AppCommon;
 use app\service\DiyLog;
 use app\service\PluginsService;
-
+error_reporting(E_ALL);
 
 class Index extends Admin
 {

@@ -12,6 +12,7 @@ namespace app\service;
 use app\common\controller\AppCommon;
 use base\FileUtil;
 use think\Db;
+use think\Log;
 
 
 class PluginsService
@@ -58,13 +59,16 @@ class PluginsService
      * 查找所有的插件配置
      * @param $dir string 插件目录
      * @param $fileName string 配置文件名称，如config.json
-     * @return array
+     * @return array|bool
      */
     private static function getConfigFiles($dir, $fileName)
     {
         $dir = rtrim($dir, '/');//先移除
+        if (!is_dir($dir)){
+            Log::write('插件目录不存在：'.$dir,'error');
+            return false;
+        }
         $scans = scandir($dir);
-
         if (!empty($scans)) {
             foreach ($scans as $plugin_tag) {
                 if ($plugin_tag == ".." || $plugin_tag == ".") {
