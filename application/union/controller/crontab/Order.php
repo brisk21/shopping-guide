@@ -5,20 +5,26 @@ namespace app\union\controller\crontab;
 
 
 use AlibabaCloud\SDK\Dysmsapi\V20170525\Models\AddShortUrlResponseBody\data;
+use app\common\common;
 use app\common\controller\AppCommon;
+use app\common\model\CommonUserTbauth;
 use app\common\model\UnionOrders;
 use app\common\model\UnionPddOrder;
+use app\common\model\UnionTbOrder;
+use app\server\GuideDtkServer;
 use app\server\GuidePddServer;
 use think\Request;
 
 class Order extends Base
 {
     private $pdd;
+    private $dtk;
 
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->pdd = new GuidePddServer();
+        $this->dtk = new GuideDtkServer();
     }
 
     //抓单拼多多
@@ -35,7 +41,7 @@ class Order extends Base
         if (!empty($req['data'])) {
             $arrUp = $arrInsert = [];
             foreach ($req['data'] as $item) {
-                $has = $model->fetchData(['order_sn'=>$item['order_sn']]);
+                $has = $model->fetchData(['order_sn' => $item['order_sn']]);
                 if (!empty($has['id'])) {
                     $item['id'] = $has['id'];
                     $arrUp[] = $item;
@@ -53,7 +59,9 @@ class Order extends Base
             if ($arrUp) {
                 $model->saveData(false, $arrUp, true);
             }
-            $this->syn_pdd2orders(true);
+            if ($arrInsert || $arrUp) {
+                $this->syn_pdd2orders(true);
+            }
         }
         return data_return('跟单完成', 0, [
             'orderCount' => count($req['data']),
@@ -78,8 +86,9 @@ class Order extends Base
         $orderModel = new UnionOrders();
         //订单类型，1-拼多多，2-小程序，3-亿起发，4-淘宝，5-京东，6-唯品会，7-其他
         $arrUp = $arrInsert = [];
+        $type = 1;
         foreach ($orders as $order) {
-            $has = $orderModel->fetchData(['order_sn' => $order['order_sn']]);
+            $has = $orderModel->fetchData(['order_sn' => $order['order_sn'],'type'=>$type]);
             //订单状态： -1 未支付; 0-已支付；1-已成团；2-确认收货；3-审核成功；4-审核失败（不可提现）；5-已经结算；8-非多多进宝商品（无佣金订单）
             $status = in_array($order['order_status'], [0, 1, 2, 3, 5]) ? 0 : -1;
             if (empty($order['uid']) && !empty($order['custom_parameters'])) {
@@ -92,7 +101,6 @@ class Order extends Base
             if (!empty($has['id'])) {
                 $arrUp[] = [
                     'id' => $has['id'],
-                    'up_time' => $time,
                     'uid' => !empty($has['uid']) ? $has['uid'] : $order['uid'],
                     'item_thumb' => $order['goods_thumbnail_url'],
                     'item_title' => $order['goods_name'],
@@ -104,11 +112,9 @@ class Order extends Base
 
             } else {
                 $arrInsert[] = [
-                    'type' => 1,
+                    'type' => $type,
                     'item_thumb' => $order['goods_thumbnail_url'],
                     'item_title' => $order['goods_name'],
-                    'add_time' => $time,
-                    'up_time' => $time,
                     'akey' => $order['akey'],
                     'uid' => $order['uid'],
                     'order_sn' => $order['order_sn'],
@@ -128,51 +134,117 @@ class Order extends Base
         data_return('ok', 0, ['count' => count($orders)], !$syn);
     }
 
-    //同步淘宝的到统计表
-    public function syn_tb2orders()
+    //大淘客订单
+    function syn_tb_order($syn = false)
     {
-        $stime = strtotime("- 10 minutes");
-        $orders = common::get_data_list('plugin_guide_tb_order', '*', ['last_syn_time' => ['>', $stime]], '', 50);
+        $this->syn_tb2orders(true);
+        if (!empty($this->params['stime'])) {
+            $arg['startTime'] = $this->params['stime'];
+        } else {
+            $arg['startTime'] = date('Y-m-d H:i:s', strtotime("-3 hours"));
+        }
+        $etime = strtotime("+3 hours", strtotime($arg['startTime']));
+        $arg['endTime'] = date('Y-m-d H:i:s', $etime > time() ? time() : $etime);
+
+        if (!empty($this->params['orderScene'])) {
+            //场景订单场景类型，1:常规订单，2:渠道订单，3:会员运营订单，默认为1
+            $arg['orderScene'] = intval($this->params['orderScene']);
+        }
+        $res = $this->dtk->tb_orders($arg);
+        if (empty($res['results']['publisher_order_dto'])) {
+            return data_return('暂无订单', -1, '', !$syn);
+        }
+        $orders = $res['results']['publisher_order_dto'];
+        $arrUp = $arrInsert = [];
+        $model = new UnionTbOrder();
+        foreach ($orders as $item) {
+            $has = $model->fetchData(['order_sn' => $item['trade_id']]);
+            if (!empty($has['id'])) {
+                $item['id'] = $has['id'];
+                $arrUp[] = $item;
+            } else {
+                if (!empty($item['relation_id'])) {
+                    $uid = (new CommonUserTbauth())->getValue(['relation_id' => $item['relation_id']], 'uid');
+                    if ($uid) $item['uid'] = $uid;
+                }
+                $arrInsert[] = $item;
+            }
+        }
+        if ($arrInsert) {
+            $model->addData($arrInsert, true);
+        }
+        if ($arrUp) {
+            $model->saveData(false, $arrUp, true);
+        }
+        if ($arrInsert || $arrUp) {
+            $this->syn_tb2orders(true);
+        }
+
+        return data_return('ok', 0, ['count' => count($orders),'countUp'=>count($arrUp),'countNew'=>count($arrInsert)], !$syn);
+    }
+
+    //同步淘宝的到统计表
+    public function syn_tb2orders($syn = false)
+    {
+        $stime = !empty($this->params['mtime'])?trim($this->params['mtime']):date('Y-m-d H:i:s',strtotime("-30 minutes"));
+        $orders = (new UnionTbOrder())
+            ->listData(['modified_time' => ['>', $stime]], 1, 50, 'id asc')
+            ->toArray();
 
         if (empty($orders)) {
-            data_return('暂无订单', -1);
+            return data_return('暂无订单', -1, '', $syn);
         }
-        $time = time();
 
+        $orders = $orders['data'] ? $orders['data'] : [];
+
+        $orderModel = new UnionOrders();
         //订单类型，1-拼多多，2-小程序，3-亿起发，4-淘宝，5-京东，6-唯品会，7-其他
-        foreach ($orders->items() as $order) {
-            $has = common::data_detail('plugin_guide_orders', ['order_sn' => $order['trade_id'], 'type' => 4], 'id,status');
-            //3：订单结算，12：订单付款， 13：订单失效，14：订单成功
-            $status = in_array($order['tk_status'], [3, 12, 14]) ? 0 : -1;
-            if (!empty($has)) {
-                common::data_update('plugin_guide_orders', ['id' => $has['id']], [
-                    'up_time' => $time,
+        $arrUp = $arrInsert = [];
+        $type = 4;
+        foreach ($orders as $order) {
+            $has = $orderModel->fetchData(['order_sn' => $order['trade_id'],'type'=>$type]);
+            //已付款：指订单已付款，但还未确认收货 已收货：指订单已确认收货，但商家佣金未支付 已结算：指订单已确认收货，且商家佣金已支付成功 已失效：指订单关闭/订单佣金小于0.01元，订单关闭主要有：1）买家超时未付款； 2）买家付款前，买家/卖家取消了订单；3）订单付款后发起售中退款成功；3：订单结算，12：订单付款， 13：订单失效，14：订单成功
+            $status = in_array($order['tk_status'], [12]) ? -1 : 0;
+            if (empty($order['uid']) && !empty($order['relation_id'])) {
+                $uid = (new CommonUserTbauth())->getValue(['relation_id' => $order['relation_id']], 'uid');
+                if ($uid) $order['uid'] = $uid;
+            }
+
+            if (!empty($has['id'])) {
+                $arrUp[] = [
+                    'id' => $has['id'],
+                    'uid' => !empty($has['uid']) ? $has['uid'] : $order['uid'],
                     'item_thumb' => $order['item_img'],
                     'item_title' => $order['item_title'],
                     'price' => $order['alipay_total_price'],
-                    'commission_rate' => $order['total_commission_rate'],
-                    'commission' => $order['total_commission_fee'],
+                    'commission_rate' => $order['total_commission_fee'],
+                    'commission' => $order['pub_share_fee'],
                     'status' => $has['status'] == 1 ? 1 : $status,//-1-已无效，0-待结算，1-已结算
-                ]);
+                ];
+
             } else {
-                common::data_add('plugin_guide_orders', [
-                    'type' => 4,
-                    'item_thumb' => $order['item_img'],
-                    'item_title' => $order['item_title'],
-                    'add_time' => $time,
-                    'up_time' => $time,
+                $arrInsert[] = [
+                    'type' => $type,
                     'akey' => $order['akey'],
                     'uid' => $order['uid'],
                     'order_sn' => $order['trade_id'],
+                    'item_thumb' => $order['item_img'],
+                    'item_title' => $order['item_title'],
                     'price' => $order['alipay_total_price'],
-                    'commission_rate' => $order['total_commission_rate'],
-                    'commission' => $order['total_commission_fee'],
-                    'status' => $status,//-1-已无效，0-待结算，1-已结算
-                ]);
+                    'commission_rate' => $order['total_commission_fee'],
+                    'commission' => $order['pub_share_fee'],
+                    'status' => $has['status'] == 1 ? 1 : $status,//-1-已无效，0-待结算，1-已结算
+                ];
             }
-
         }
-        data_return('ok', 0, ['count' => count($orders)]);
+        if ($arrInsert) {
+            $orderModel->addData($arrInsert, true);
+        }
+        if ($arrUp) {
+            $orderModel->saveData(false, $arrUp, true);
+        }
+
+        return data_return('ok', 0, ['count' => count($orders),'countUp'=>count($arrUp),'countNew'=>count($arrInsert)], !$syn);
     }
 
 

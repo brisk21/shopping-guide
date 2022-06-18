@@ -1121,4 +1121,44 @@ class GuideDtkServer
         cache($key, $res['data'], 60);
         return $res['data'];
     }
+
+    //查询订单
+    public function tb_orders($arg = [])
+    {
+        //https://openapi.dataoke.com/api/tb-service/get-privilege-link
+        $client = new \GetOrderDetails();
+        $client->setAppKey($this->conf['appkey']);
+        $client->setAppSecret($this->conf['appsecret']);
+        $client->setVersion('v1.0.0');
+        $arg['pid'] = $this->conf['pid'];
+
+
+        if (empty($arg['queryType'])) {
+            //查询时间类型，1：按照订单淘客创建时间查询，2:按照订单淘客付款时间查询，3:按照订单淘客结算时间查询，4：按照订单更新时间（5.27新增字段）
+            $arg['queryType'] = 1;
+
+        }
+        if (empty($arg['orderScene'])) {
+            $arg['orderScene'] = 1;//场景订单场景类型，1:常规订单，2:渠道订单，3:会员运营订单，默认为1
+
+
+        }
+
+        if (empty($arg['startTime'])) {
+            $arg['startTime'] = date('Y-m-d H:i:s', strtotime("-3 hours", time()));
+        }
+        if (empty($arg['endTime'])) {
+            $arg['endTime'] = date('Y-m-d H:i:s');
+        }
+        $client->setParams($arg);
+
+        $res = json_decode($client->setParams($arg)->request(), true);
+        if (!empty($res['code'])) {
+            common::add_log('大淘客抓单', $res);
+            return [];
+        }
+
+        return $res['data'];
+    }
+
 }

@@ -75,7 +75,7 @@ class DgApiBase extends Controller
     //获取用户淘宝授权关系ID
     public function tbauth_info()
     {
-        return (new CommonUserTbauth())->getOne(['uid' => $this->uid], 'relation_id');
+        return (new CommonUserTbauth())->fetchData(['uid' => $this->uid], 'relation_id');
     }
 
     public function tb_check_auth()

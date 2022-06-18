@@ -23,10 +23,8 @@ class App
         }
 
         //异常监听
-        if (defined('BS_CATCH_ERROR') && BS_CATCH_ERROR) {
+        if (defined('BS_CATCH_ERROR')) {
             ErrorService::catch_error(BS_CATCH_ERROR);
-        }else{
-            ErrorService::catch_error(true);
         }
         //可以跨域的白名单
         $domains = ['localhost','h5.dg.wei1.top','daogou.server.wei1.top','h5.dg.test.top'];

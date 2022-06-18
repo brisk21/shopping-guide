@@ -7,7 +7,7 @@ namespace app\common\model;
 
 class CommonUserTbauth extends Base
 {
-    public function getOne($condition = [], $field = '')
+    public function fetchData($condition = [], $field = '')
     {
         $where = [];
         if (!empty($condition['uid'])) {
