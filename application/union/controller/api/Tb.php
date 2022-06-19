@@ -375,7 +375,6 @@ class Tb extends DgApiBase
         $this->tb_check_auth();
         $req = $this->dtk->link_tb([
             'goodsId' => $this->params['goodsId'],
-            //fixme 动态化
             'channelId' => $this->defaultTbRelationId,
         ]);
         if (empty($req['shortUrl'])) {

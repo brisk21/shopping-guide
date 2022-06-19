@@ -715,3 +715,56 @@ function cache_service_check($type)
     cache($key, 1, $expire);
     return true;
 }
+
+/**
+ * 用fsockopen异步请求发送数据
+ * @param $url
+ * @param array $data
+ * @param string $method
+ * @return array|int[]
+ * @author blog.alipay168.cn
+ */
+function sock_request($url, $data = [], $method = 'POST')
+{
+    $method = strtoupper($method);
+    $parse = parse_url($url);
+    $host = $parse['host'];
+    $port = !empty($parse['port']) ? intval($parse['port']) : 80;
+    $path = !empty($parse['path']) ? trim($parse['path']) : '';
+    $scheme = !empty($parse['scheme']) ? trim($parse['scheme']) : '';
+    $fp = fsockopen($host, $port, $error_code, $error_msg, 1);
+    if (!$fp) {
+        return array('code' => $error_code, 'msg' => $error_msg);
+    }
+    $query_str = '';
+    if ($data) {
+        $query_str = is_array($data)? http_build_query($data):$data;
+    }
+    ////阻塞模式:0-非阻塞，1-阻塞
+    stream_set_blocking($fp, 0);
+    //超时时间
+    stream_set_timeout($fp, 1);
+
+    if ($method=='GET'){
+        $con =  "GET $path?$query_str HTTP/1.1\r\n";
+        $con .= "Host: $host\r\n";
+        $con .= "Connection: close\r\n\r\n";//长连接关闭
+    }else{
+        $con =  "POST $path HTTP/1.1\r\n";
+        $con .= "Host: $host\r\n";
+        //类型自定义,下面的方式可以用$_POST获取
+        //  $con .="Content-Type: application/x-www-form-urlencoded\r\n";
+        $con .="Content-Length:".strlen($query_str)."\r\n\r\n";
+        //post内容
+        $con .="$query_str\r\n";
+        $con .= "Connection: close\r\n\r\n";//长连接关闭
+
+    }
+    fwrite($fp, $con);
+    //修复nginx请求不成功问题
+    usleep(1000);
+    fclose($fp);
+    //输出字符串
+    //echo $con;
+    return array('code' => 0);
+}

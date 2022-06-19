@@ -33,6 +33,8 @@ class DgApiBase extends Controller
     protected $uid = 'bs8761cfc65a8178c26c6be0d3dc963b6b';
     private $union_code = '123456';
 
+    protected $isLogin = false;
+
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
@@ -61,6 +63,9 @@ class DgApiBase extends Controller
 
     public function pdd_check_auth()
     {
+        if (!$this->isLogin){
+            data_return('登录超时',401);
+        }
         if (!$this->pdd->is_authed()) {
             $req = $this->pdd->auth_url();
             if (!empty($req['data']['mobile_url'])) {
@@ -75,6 +80,9 @@ class DgApiBase extends Controller
     //获取用户淘宝授权关系ID
     public function tbauth_info()
     {
+        if (!$this->isLogin){
+            data_return('登录超时',401);
+        }
         return (new CommonUserTbauth())->fetchData(['uid' => $this->uid], 'relation_id');
     }
 
@@ -95,6 +103,7 @@ class DgApiBase extends Controller
         if (!$token){
             return ;
         }
+        $this->isLogin = false;
         $user = CommonUser::app_token_user($token, 'uid,account,union_code,status');
         if (!$user) {
             //todo 非白名单验证
@@ -102,6 +111,7 @@ class DgApiBase extends Controller
         if ($user['status'] == 1) {
             data_return('账号异常，限制登录', -1);
         }
+        $this->isLogin = true;
         $this->union_code = $user['union_code'];
         $this->uid = $user['uid'];
         // common::add_log($user,$token);

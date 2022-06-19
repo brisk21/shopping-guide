@@ -68,7 +68,6 @@ class UnionOrders extends Base
 
     public function getStatusTextAttr($value, $data)
     {
-        Log::write([$value,$data],'cccccccc');
         return config('param.union_orders')['status'][$data['status']];
     }
 

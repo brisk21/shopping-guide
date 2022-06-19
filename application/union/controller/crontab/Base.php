@@ -15,6 +15,16 @@ abstract class Base extends Controller
     {
         parent::__construct($request);
         $this->params = input();
+        $this->_check_key();
+    }
+
+    private function _check_key()
+    {
+        $apiKey = config('api.crontab');
+        if (empty($apiKey['apikey'])) data_return('接口配置有误', -1);
+        if (empty($this->params['apikey']) || $this->params['apikey'] !== $apiKey['apikey']) {
+            data_return('apikey未授权', 500);
+        }
     }
 
     public function get_uid($unionCode)

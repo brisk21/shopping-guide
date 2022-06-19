@@ -13,6 +13,7 @@ use app\common\model\UnionPddOrder;
 use app\common\model\UnionTbOrder;
 use app\server\GuideDtkServer;
 use app\server\GuidePddServer;
+use think\Log;
 use think\Request;
 
 class Order extends Base
@@ -25,6 +26,15 @@ class Order extends Base
         parent::__construct($request);
         $this->pdd = new GuidePddServer();
         $this->dtk = new GuideDtkServer();
+    }
+
+    //手动同步
+    public function handle_syn()
+    {
+        $this->syn_pdd(true);
+        $this->syn_tb(true);
+        Log::write(\request()->param(),'contab/order/handle_syn');
+        data_return('success',0);
     }
 
     //抓单拼多多
@@ -135,7 +145,7 @@ class Order extends Base
     }
 
     //大淘客订单
-    function syn_tb_order($syn = false)
+    function syn_tb($syn = false)
     {
         $this->syn_tb2orders(true);
         if (!empty($this->params['stime'])) {

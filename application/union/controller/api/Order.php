@@ -25,9 +25,13 @@ class Order extends DgApiBase
             data_return('操作过于频繁，' . ($second - time()) . '秒后可再次刷新', -1);
         }
         cache($key, time() + 30, 30);
-        $res = (new \app\union\controller\crontab\Order())->syn_pdd(true);
+        //异步
+        $api = URL_WEB.'union/crontab.order/handle_syn';
+        sock_request($api, [
+            'apikey' => config('api.crontab')['apikey']
+        ],'GET');
         data_return('success', 0, [
-            'status' => !empty($res['data']['orderCount'])
+            'status' => 1,
         ]);
     }
 

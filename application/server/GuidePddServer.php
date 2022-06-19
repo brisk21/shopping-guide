@@ -147,7 +147,7 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (!empty($content['error_response'])) {
-            return data_return_arr('网络正忙', -1, $content);
+            return data_return_arr('网络正忙', -1, $content['error_response']);
         }
 
         $data = $content['goods_promotion_url_generate_response']['goods_promotion_url_list'][0];
@@ -219,7 +219,7 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('err', $content);
+            common::add_log('err', $content['error_response']);
             return data_return_arr('网络正忙', -1);
         }
 
@@ -277,8 +277,10 @@ class GuidePddServer
         $content = $response->getContent();
 
         if (isset($content['error_response'])) {
-
-            return data_return_arr('网络正忙', -1, $response);
+            if ($content['error_response']['error_code'] == 50001){
+                $this->pdd_check_auth();
+            }
+            return data_return_arr('网络正忙', -1, $content['error_response']);
         } elseif (!empty($content['goods_basic_detail_response']['list'])) {
             cache($key, [
                 'code' => 0,
@@ -290,6 +292,19 @@ class GuidePddServer
 
         return data_return_arr('ok', 0, $content['goods_basic_detail_response']);
 
+    }
+
+    public function pdd_check_auth()
+    {
+        if (!$this->is_authed()) {
+            $req = $this->auth_url();
+            if (!empty($req['data']['mobile_url'])) {
+                data_return('您需要先授权才能使用该功能，是否马上授权？', config('code.pdd_auth'), [
+                    'mobile_url' => $req['data']['mobile_url'],
+                    'url' => $req['data']['url'],
+                ]);
+            }
+        }
     }
 
     //按支付时间段查询订单
@@ -309,7 +324,7 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            return data_return('网络正忙', -1, $response);
+            return data_return('网络正忙', -1, $content['error_response']);
         }
 
         return data_return('ok', 0, $content);
@@ -331,7 +346,7 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            return data_return_arr('网络正忙', -1, $response);
+            return data_return_arr('网络正忙', -1, $content['error_response']);
         }
         if (empty($content['order_list_get_response']['order_list'])) {
             return data_return_arr('暂无订单', 0);
@@ -395,7 +410,7 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            return data_return_arr('网络正忙', -1, $response);
+            return data_return_arr('网络正忙', -1, $content['error_response']);
         }
 
         return data_return_arr('ok', 0, $content['rp_promotion_url_generate_response']);
@@ -449,8 +464,8 @@ class GuidePddServer
 
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return_arr('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return_arr('系统正忙', -1, $content['error_response']);
         }
 
         //1-已绑定；0-未绑定
@@ -489,8 +504,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return_arr('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return_arr('系统正忙', -1, $content['error_response']);
         }
         //common::add_log('pddAuth:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
         return data_return_arr('ok', 0, $content['goods_promotion_url_generate_response']);
@@ -513,8 +528,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         //common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
         return data_return('ok', 0, $content['cms_promotion_url_generate_response']['url_list']);
@@ -541,8 +556,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         //common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
         return data_return('ok', 0, $content['resource_url_response']);
@@ -561,8 +576,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         //common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
         return data_return('ok', 0, $content['goods_zs_unit_generate_response']);
@@ -584,8 +599,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         //common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
         return data_return('ok', 0, $content['goods_zs_unit_generate_response']);
@@ -613,8 +628,8 @@ class GuidePddServer
         }
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         return data_return('ok', 0, $content['p_id_generate_response']);
     }
@@ -647,8 +662,8 @@ class GuidePddServer
         }
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
         return data_return('ok', 0, $content['p_id_query_response']);
     }
@@ -672,8 +687,8 @@ class GuidePddServer
         $response = $client->syncInvoke($request, self::$accessToken);
         $content = $response->getContent();
         if (isset($content['error_response'])) {
-            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content);
-            return data_return('系统正忙', -1, $content);
+            common::add_log('pddErr:' . __CLASS__ . __FUNCTION__ . __LINE__, $content['error_response']);
+            return data_return('系统正忙', -1, $content['error_response']);
         }
 
        return data_return_arr('ok',0,$content['rp_promotion_url_generate_response']['url_list'][0]);
