@@ -10,6 +10,8 @@ class UnionPddOrder extends Base
     protected $updateTime = 'up_time';
     protected $autoWriteTimestamp = true;
 
+    protected $append = [];
+
 
     public function addData($data, $saveAll = false)
     {
@@ -46,7 +48,16 @@ class UnionPddOrder extends Base
             ->field(true)
             ->order($order)
             ->page($page, $pageSize)
-            ->paginate($pageSize, false, ['page' => $page]);
+            ->paginate($pageSize, false, ['page' => $page])
+            ->each(function ($item) {
+                $item['order_create_time'] = date('Y-m-d H:i:s', $item['order_create_time']);
+                $item['order_modify_at'] = date('Y-m-d H:i:s', $item['order_modify_at']);
+                $item['order_pay_time'] = date('Y-m-d H:i:s', $item['order_pay_time']);
+                $item['order_group_success_time'] = date('Y-m-d H:i:s', $item['order_group_success_time']);
+                $item['order_amount'] = $item['order_amount'] / 100;
+                $item['commission'] = $item['promotion_amount'] / 100;
+                $item['commission_rate'] = $item['promotion_rate'] / 10;
+            });
     }
 
     public function listDataNoPage($condition = [], $limit = 10, $order = 'id desc')

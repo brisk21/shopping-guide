@@ -33,8 +33,8 @@ class Order extends Base
     {
         $this->syn_pdd(true);
         $this->syn_tb(true);
-        Log::write(\request()->param(),'contab/order/handle_syn');
-        data_return('success',0);
+        Log::write(\request()->param(), 'contab/order/handle_syn');
+        data_return('success', 0);
     }
 
     //抓单拼多多
@@ -98,7 +98,7 @@ class Order extends Base
         $arrUp = $arrInsert = [];
         $type = 1;
         foreach ($orders as $order) {
-            $has = $orderModel->fetchData(['order_sn' => $order['order_sn'],'type'=>$type]);
+            $has = $orderModel->fetchData(['order_sn' => $order['order_sn'], 'type' => $type]);
             //订单状态： -1 未支付; 0-已支付；1-已成团；2-确认收货；3-审核成功；4-审核失败（不可提现）；5-已经结算；8-非多多进宝商品（无佣金订单）
             $status = in_array($order['order_status'], [0, 1, 2, 3, 5]) ? 0 : -1;
             if (empty($order['uid']) && !empty($order['custom_parameters'])) {
@@ -114,9 +114,9 @@ class Order extends Base
                     'uid' => !empty($has['uid']) ? $has['uid'] : $order['uid'],
                     'item_thumb' => $order['goods_thumbnail_url'],
                     'item_title' => $order['goods_name'],
-                    'price' => $order['order_amount'] / 100,
-                    'commission_rate' => $order['promotion_rate'] / 10,
-                    'commission' => $order['promotion_amount'] / 100,
+                    'price' => $order['order_amount'],
+                    'commission_rate' => $order['commission_rate'],
+                    'commission' => $order['commission'],
                     'status' => $has['status'] == 1 ? 1 : $status,//-1-已无效，0-待结算，1-已结算
                 ];
 
@@ -128,9 +128,9 @@ class Order extends Base
                     'akey' => $order['akey'],
                     'uid' => $order['uid'],
                     'order_sn' => $order['order_sn'],
-                    'price' => $order['order_amount'] / 100,
-                    'commission_rate' => $order['promotion_rate'] / 10,
-                    'commission' => $order['promotion_amount'] / 100,
+                    'price' => $order['order_amount'],
+                    'commission_rate' => $order['commission_rate'],
+                    'commission' => $order['commission'],
                     'status' => $status,//-1-已无效，0-待结算，1-已结算
                 ];
             }
@@ -190,13 +190,13 @@ class Order extends Base
             $this->syn_tb2orders(true);
         }
 
-        return data_return('ok', 0, ['count' => count($orders),'countUp'=>count($arrUp),'countNew'=>count($arrInsert)], !$syn);
+        return data_return('ok', 0, ['count' => count($orders), 'countUp' => count($arrUp), 'countNew' => count($arrInsert)], !$syn);
     }
 
     //同步淘宝的到统计表
     public function syn_tb2orders($syn = false)
     {
-        $stime = !empty($this->params['mtime'])?trim($this->params['mtime']):date('Y-m-d H:i:s',strtotime("-30 minutes"));
+        $stime = !empty($this->params['mtime']) ? trim($this->params['mtime']) : date('Y-m-d H:i:s', strtotime("-30 minutes"));
         $orders = (new UnionTbOrder())
             ->listData(['modified_time' => ['>', $stime]], 1, 50, 'id asc')
             ->toArray();
@@ -212,7 +212,7 @@ class Order extends Base
         $arrUp = $arrInsert = [];
         $type = 4;
         foreach ($orders as $order) {
-            $has = $orderModel->fetchData(['order_sn' => $order['trade_id'],'type'=>$type]);
+            $has = $orderModel->fetchData(['order_sn' => $order['trade_id'], 'type' => $type]);
             //已付款：指订单已付款，但还未确认收货 已收货：指订单已确认收货，但商家佣金未支付 已结算：指订单已确认收货，且商家佣金已支付成功 已失效：指订单关闭/订单佣金小于0.01元，订单关闭主要有：1）买家超时未付款； 2）买家付款前，买家/卖家取消了订单；3）订单付款后发起售中退款成功；3：订单结算，12：订单付款， 13：订单失效，14：订单成功
             $status = in_array($order['tk_status'], [12]) ? -1 : 0;
             if (empty($order['uid']) && !empty($order['relation_id'])) {
@@ -227,8 +227,8 @@ class Order extends Base
                     'item_thumb' => $order['item_img'],
                     'item_title' => $order['item_title'],
                     'price' => $order['alipay_total_price'],
-                    'commission_rate' => $order['total_commission_fee'],
-                    'commission' => $order['pub_share_fee'],
+                    'commission_rate' => $order['commission_rate'],
+                    'commission' => $order['commission'],
                     'status' => $has['status'] == 1 ? 1 : $status,//-1-已无效，0-待结算，1-已结算
                 ];
 
@@ -241,8 +241,8 @@ class Order extends Base
                     'item_thumb' => $order['item_img'],
                     'item_title' => $order['item_title'],
                     'price' => $order['alipay_total_price'],
-                    'commission_rate' => $order['total_commission_fee'],
-                    'commission' => $order['pub_share_fee'],
+                    'commission_rate' => $order['commission_rate'],
+                    'commission' => $order['commission'],
                     'status' => $has['status'] == 1 ? 1 : $status,//-1-已无效，0-待结算，1-已结算
                 ];
             }
@@ -254,7 +254,7 @@ class Order extends Base
             $orderModel->saveData(false, $arrUp, true);
         }
 
-        return data_return('ok', 0, ['count' => count($orders),'countUp'=>count($arrUp),'countNew'=>count($arrInsert)], !$syn);
+        return data_return('ok', 0, ['count' => count($orders), 'countUp' => count($arrUp), 'countNew' => count($arrInsert)], !$syn);
     }
 
 

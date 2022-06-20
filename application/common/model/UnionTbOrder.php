@@ -10,6 +10,21 @@ class UnionTbOrder extends Base
     protected $updateTime = 'up_time';
     protected $autoWriteTimestamp = true;
 
+    protected $append = [
+        'status_text'
+    ];
+
+
+    public function getStatusTextAttr($val, $data)
+    {
+        $status = [
+            3 => '已结算',
+            12 => '已付款',
+            13 => '已失效',
+            14 => '确认收货',
+        ];
+        return $status[$data['tk_status']];
+    }
 
     public function addData($data, $saveAll = false)
     {
@@ -49,7 +64,11 @@ class UnionTbOrder extends Base
             ->field(true)
             ->order($order)
             ->page($page, $pageSize)
-            ->paginate($pageSize, false, ['page' => $page]);
+            ->paginate($pageSize, false, ['page' => $page])
+            ->each(function ($item) {
+                $item['commission_rate'] = $item['tk_total_rate'];
+                $item['commission'] = round($item['alipay_total_price'] * (round($item['tk_total_rate'] / 100, 2)), 2);
+            });
     }
 
     public function listDataNoPage($condition = [], $limit = 10, $order = 'id desc')
