@@ -158,7 +158,7 @@ class Index extends Admin
         }
         $res = Credits::update($data['uid'], 'credit', $num, [
             'remark' => '后台操作-' . trim($this->param['remark']),
-            'type' => 2,//1-购买商品，2-充值记录，3-提现记录,
+            'type' => 2,//类型：2-收入，1-支出
         ]);
         if ($res) {
             parent::add_admin_log(['title' => '给会员充值', 'content' => $this->param]);

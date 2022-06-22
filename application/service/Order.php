@@ -173,7 +173,7 @@ class Order
         if ($payType == 'credit') {
             $res = Credits::update($order['uid'], 'credit', $money, [
                 'remark' => '订单退款',
-                'type' => 2,//1-购买商品，2-充值记录，3-提现记录,
+                'type' => 2,//类型：2-收入，1-支出
             ]);
             if (!$res) {
                 return ['code' => -1, 'msg' => '退款失败'];

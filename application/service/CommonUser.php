@@ -67,7 +67,7 @@ class CommonUser
         if ($id && !empty($conf['reg_gift_credit'])) {
             $res = Credits::update($data['uid'], 'credit', $conf['reg_gift_credit'], [
                 'remark' => '注册赠送余额',
-                'type' => 2,//1-购买商品，2-充值记录，3-提现记录,
+                'type' => 2,//类型：2-收入，1-支出
             ]);
         }
         return $id;

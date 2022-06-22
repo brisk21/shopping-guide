@@ -83,7 +83,7 @@ class Credits
         $log = [
             'uid' => $uid,
             'remark' => $arg['remark'],
-            'type' => isset($arg['type']) ? $arg['type'] : '0',//1-购买商品，2-充值记录，3-提现记录,
+            'type' => isset($arg['type']) ? $arg['type'] : ($num > 0 ? 2 : 1),//类型：2-收入，1-支出
             'before_num' => $before,
             'num' => $num,
             'after_num' => $after

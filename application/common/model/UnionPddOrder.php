@@ -44,6 +44,8 @@ class UnionPddOrder extends Base
             ->where(function ($query) use ($condition) {
                 if (!empty($condition['order_sn'])) $query->where('order_sn', $condition['order_sn']);
                 if (!empty($condition['order_modify_at'])) $query->where(['order_modify_at' => $condition['order_modify_at']]);
+                if (!empty($condition['order_status'])) $query->where(['order_status' => $condition['order_status']]);
+                if (isset($condition['is_jiesuan'])) $query->where(['is_jiesuan' => $condition['is_jiesuan']]);
             })
             ->field(true)
             ->order($order)

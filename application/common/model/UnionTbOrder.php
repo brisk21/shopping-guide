@@ -60,6 +60,8 @@ class UnionTbOrder extends Base
                 if (!empty($condition['order_sn'])) $query->where('trade_id', $condition['order_sn']);
                 if (!empty($condition['last_syn_time'])) $query->where(['last_syn_time' => $condition['last_syn_time']]);
                 if (!empty($condition['modified_time'])) $query->where(['modified_time' => $condition['modified_time']]);
+                if (isset($condition['is_jiesuan'])) $query->where(['is_jiesuan' => $condition['is_jiesuan']]);
+                if (isset($condition['tk_status'])) $query->where(['tk_status' => $condition['tk_status']]);
             })
             ->field(true)
             ->order($order)
