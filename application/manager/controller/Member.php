@@ -46,7 +46,7 @@ class Member extends Base
     public function get_data(Request $request)
     {
         $id = $request->get('id',0,'intval');
-        $data = $this->model->fetchData($id);
+        $data = $this->model->fetchData(['id'=>$id]);
 
         data_return('success',0,$data);
     }

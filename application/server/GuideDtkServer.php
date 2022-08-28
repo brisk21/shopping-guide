@@ -30,16 +30,15 @@ class GuideDtkServer
     //初始化配置
     private function init_config()
     {
-        $data = (new ConfigSys())->get_value('union');
+        $data = (new ConfigSys())->get_value(ConfigSys::key_union);
         $this->conf = [
             'appkey' => !empty($data['dtk_appkey']) ? trim($data['dtk_appkey']) : '',
             'pid' => !empty($data['dtk_pid']) ? trim($data['dtk_pid']) : '',
             'appsecret' => !empty($data['dtk_appsecret']) ? trim($data['dtk_appsecret']) : '',
             'inviterCode' => !empty($data['dtk_inviterCode']) ? trim($data['dtk_inviterCode']) : '',
-            //todo 动态化
-            'pdd_pid' => '10026467_245961574',
-            'jd_pid' => '1001870101_0_3004471400',
-            'jd_unionId' => '1001870101',
+            'pdd_pid' => !empty($data['dtk_pdd_pid']) ? trim($data['dtk_pdd_pid']) : '',
+            'jd_pid' => !empty($data['dtk_jd_pid']) ? trim($data['dtk_jd_pid']) : '',
+            'jd_unionId' =>!empty($data['dtk_jd_unionId']) ? trim($data['dtk_jd_unionId']) : '',
         ];
     }
 

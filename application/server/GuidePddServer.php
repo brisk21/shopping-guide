@@ -57,7 +57,7 @@ class GuidePddServer
     //初始化配置
     private function init_config()
     {
-        $data = (new ConfigSys())->get_value('union');
+        $data = (new ConfigSys())->get_value(ConfigSys::key_union);
         if (!empty($data)) {
             self::$clientId = !empty($data['pdd_clientId']) ? $data['pdd_clientId'] : '';
             self::$clientSecret = !empty($data['pdd_clientSecret']) ? $data['pdd_clientSecret'] : '';

@@ -28,8 +28,6 @@ class Index extends Admin
 
     public function index($return = false)
     {
-        /*$v = (new ConfigSys())->get_value('union');
-        dump($v);die();*/
         $k = 'admin_default_frame_style' . $this->admin_uid;
         $type = cache($k);
         if (IS_AJAX) {

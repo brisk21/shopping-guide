@@ -5,10 +5,26 @@ namespace app\server;
 
 //好单库
 use app\common\common;
+use app\common\model\ConfigSys;
 
 class GuideHaoDanKuServer
 {
-    protected $apikey = '8E5F76E37FFC';
+    protected $apikey = '';
+
+    public function __construct()
+    {
+        $this->init_config();
+    }
+
+    //初始化配置
+    private function init_config()
+    {
+        $data = (new ConfigSys())->get_value(ConfigSys::key_union);
+        if (!empty($data)) {
+            $this->apikey = !empty($data['haodanku_apikey']) ? $data['haodanku_apikey'] : '';
+        }
+    }
+
 
     //达人说
     public function talent_info($arg = [])
